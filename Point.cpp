@@ -1,6 +1,6 @@
 class Point {
 public:
-    double x, y, z;
+    float x, y, z;
 
     Point() {
         x = 0;
@@ -8,7 +8,7 @@ public:
         z = 0;
     }
 
-    Point(double x, double y, double z) {
+    Point(float x, float y, float z) {
         this->x = x;
         this->y = y;
         this->z = z;

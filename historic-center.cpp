@@ -3,27 +3,27 @@
 #include <stdio.h>
 #include <math.h>
 
-#include "camera.cpp"
+#include "Color.h"
+#include "Point.h"
+#include "Face.h"
+#include "Model.h"
+#include "Camera.h"
 
 #define GLUT_KEY_SHIFT 112
 
-// actual vector representing the camera's direction
-//float lx = 0.0f, lz = -1.0f, ly = 0.0f;
-
-// position of the camera
-//float x = 0.0f, z = 7.0f, y = 1.0f;
 Camera* cam = new Camera(*(new Point(0.0f, 1.0f, 7.0f)), *(new Point(0.0f, 0.0f, -1.0f)), 0.1f, 0.05f);
+Model building;
 
 float door_angle = 0.0f;
 
-// angle for rotating
-//float angle = 0.0f;
-
 bool keyPressed[256], specialKeyPressed[256];
 
-void init(void) {
+void init() {
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
+
+    building.addFace(new Point(0.3, 0, 1), new Point(2, 0, 1), new Point(2, -1.5, 1), new Point(0.3, -1.5, 1),
+            new Color(0.0f, 0.0f, 0.65f));
 }
 
 void drawHouse() {
@@ -33,11 +33,12 @@ void drawHouse() {
     glTranslatef(0.0f, 1.3f, 0.0f);
     glColor3f(0.0f, 0.0f, 0.65f);
 
+    glColor3f(0.0f, 0.0f, 0.65f);
     glBegin(GL_QUADS);  // Wall
-    glVertex3f(0.3, 0, 1);
-    glVertex3f(2, 0, 1);
-    glVertex3f(2, -1.5, 1);
-    glVertex3f(0.3, -1.5, 1);
+    for (int i = 0; i < 4; i++) {
+        Face* face = building.faces[0];
+        glVertex3f(face->points[i]->x, face->points[i]->y, face->points[i]->z);
+    }
     glEnd();
 
     glBegin(GL_QUADS);  // Wall
@@ -291,7 +292,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(50, 50);
     glutInitWindowSize(800, 600);
-    glutCreateWindow("House 3D");
+    glutCreateWindow("CH - Associação Comercial no Jaraguá");
 
     init();
 

@@ -1,4 +1,6 @@
-#include "point.cpp"
+#include <math.h>
+
+#include "Point.h"
 
 class Camera {
 public:
