@@ -1,5 +1,5 @@
 #include <queue>
-#include <vector>
+#include <stack>
 
 #include "Face.h"
 
@@ -11,7 +11,7 @@ using namespace std;
 class Model {
 public:
     vector<Face*> faces;
-    queue<Point*> lastPoints;
+    stack<Point*> lastPoints;
 
     void addFace(Point* p1, Point* p2, Point* p3, Point* p4, Color* color);
 

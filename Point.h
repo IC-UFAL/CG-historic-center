@@ -3,11 +3,11 @@
 
 class Point {
 public:
-    float x, y, z;
+    double x, z, y;
 
     Point();
 
-    Point(float x, float y, float z);
+    Point(double x, double y, double z);
 };
 
 #endif //HISTORIC_CENTER_POINT_H

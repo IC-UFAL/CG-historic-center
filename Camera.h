@@ -7,13 +7,13 @@ class Camera {
 public:
     Point position, direction;
     double speed, angularVelocity;
-    double angleXZ, angleY;
+    double angleXZ = 0.0f, angleY = 0.0f;
 
     Camera(Point pos, Point dir, double speedMov, double angularVel);
 
     void moveForward();
 
-    void modeBackward();
+    void moveBackward();
 
     void moveLeft();
 

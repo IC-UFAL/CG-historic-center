@@ -2,6 +2,7 @@
 #define HISTORIC_CENTER_COLOR_H
 
 class Color {
+public:
     double R, G, B;
 
     Color();

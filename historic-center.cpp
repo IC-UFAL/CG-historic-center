@@ -22,8 +22,14 @@ void init() {
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
-    building.addFace(new Point(0.3, 0, 1), new Point(2, 0, 1), new Point(2, -1.5, 1), new Point(0.3, -1.5, 1),
-            new Color(0.0f, 0.0f, 0.65f));
+    building.addFace(new Point(0.3, -1.5, 1), new Point(0.3, 0, 1), new Point(2, 0, 1), new Point(2, -1.5, 1),
+            new Color(1.0f, 0.0f, 0.65f));
+    building.addFace(new Point(2, 0, -1), new Point(2, -1.5, -1), new Color(1.0f, 0.0f, 0.65f));
+    building.addFace(new Point(-2, 0, -1), new Point(-2, -1.5, -1), new Color(1.0f, 0.0f, 0.65f));
+    building.addFace(new Point(-2, 0, 1), new Point(-2, -1.5, 1), new Color(1.0f, 0.0f, 0.65f));
+    building.addFace(new Point(-0.3, 0, 1), new Point(-0.3, -1.5, 1), new Color(1.0f, 0.0f, 0.65f));
+    building.addFace(new Point(-0.3, -0.25, 1), new Point(-0.3, 0, 1), new Point(0.3, 0, 1), new Point(0.3, -0.25, 1),
+                     new Color(1.0f, 0.0f, 0.65f));
 }
 
 void drawHouse() {
@@ -33,27 +39,14 @@ void drawHouse() {
     glTranslatef(0.0f, 1.3f, 0.0f);
     glColor3f(0.0f, 0.0f, 0.65f);
 
-    glColor3f(0.0f, 0.0f, 0.65f);
-    glBegin(GL_QUADS);  // Wall
-    for (int i = 0; i < 4; i++) {
-        Face* face = building.faces[0];
-        glVertex3f(face->points[i]->x, face->points[i]->y, face->points[i]->z);
+    for (auto &face : building.faces) {
+        glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
+        glBegin(GL_QUADS);
+        for (auto &point : face->points) {
+            glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
+        }
+        glEnd();
     }
-    glEnd();
-
-    glBegin(GL_QUADS);  // Wall
-    glVertex3f(-2, 0, 1);
-    glVertex3f(-0.3, 0, 1);
-    glVertex3f(-0.3, -1.5, 1);
-    glVertex3f(-2, -1.5, 1);
-    glEnd();
-
-    glBegin(GL_QUADS);  // Wall
-    glVertex3f(0.3, 0, 1);
-    glVertex3f(-0.3, 0, 1);
-    glVertex3f(-0.3, -0.25, 1);
-    glVertex3f(0.3, -0.25, 1);
-    glEnd();
 
     glColor3f(0.4f, 0.0f, 0.0f);
     glBegin(GL_QUADS);  // Roof
@@ -71,6 +64,7 @@ void drawHouse() {
     glVertex3f(-1.5, -0.8, 1.0001);
     glEnd();
 
+    glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_QUADS);  // Window Right
     glVertex3f(1.5, -0.3, 1.0001);
     glVertex3f(0.75, -0.3, 1.0001);
@@ -82,13 +76,6 @@ void drawHouse() {
     // Back side
     glPushMatrix();
     glTranslatef(0.0f, 1.3f, 0.0f);
-    glColor3f(0.0f, 0.0f, 0.65f);
-    glBegin(GL_QUADS);  // Wall
-    glVertex3f(-2, 0, -1);
-    glVertex3f(2, 0, -1);
-    glVertex3f(2, -1.5, -1);
-    glVertex3f(-2, -1.5, -1);
-    glEnd();
 
     glColor3f(0.4f, 0.0f, 0.0f);
     glBegin(GL_QUADS);  // Roof
@@ -117,12 +104,6 @@ void drawHouse() {
     glPushMatrix();
     glTranslatef(0.0f, 1.3f, 0.0f);
     glColor3f(0.0f, 0.0f, 0.65f);
-    glBegin(GL_QUADS);  // Wall
-    glVertex3f(2, 0, 1);
-    glVertex3f(2, 0, -1);
-    glVertex3f(2, -1.5, -1);
-    glVertex3f(2, -1.5, 1);
-    glEnd();
 
     glBegin(GL_TRIANGLES);  // Wall Upper
     glVertex3f(2, 0.5, 0);
@@ -135,12 +116,6 @@ void drawHouse() {
     glPushMatrix();
     glTranslatef(0.0f, 1.3f, 0.0f);
     glColor3f(0.0f, 0.0f, 0.65f);
-    glBegin(GL_QUADS);  // Wall
-    glVertex3f(-2, 0, 1);
-    glVertex3f(-2, 0, -1);
-    glVertex3f(-2, -1.5, -1);
-    glVertex3f(-2, -1.5, 1);
-    glEnd();
 
     glBegin(GL_TRIANGLES);  // Wall Upper
     glVertex3f(-2, 0.5, 0);
@@ -191,7 +166,7 @@ void updateCamera() {
         cam->moveForward();
     }
     if (keyPressed['s']) {
-        cam->modeBackward();
+        cam->moveBackward();
     }
     if (keyPressed['a']) {
         cam->moveLeft();
