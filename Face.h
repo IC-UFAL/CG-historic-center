@@ -1,15 +1,19 @@
+#include <vector>
+
 #include "Point.h"
 #include "Color.h"
 
 #ifndef HISTORIC_CENTER_FACE_H
 #define HISTORIC_CENTER_FACE_H
 
+using namespace std;
+
 class Face {
 public:
-    Point* points[4];
+    vector<Point*> points;
     Color* color;
 
-    Face(Point* p1, Point* p2, Point* p3, Point* p4, Color* color);
+    Face(int vertices, Point* points[], Color* color);
 
     void setColor(Color* color);
 };

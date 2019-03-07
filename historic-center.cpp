@@ -11,7 +11,7 @@
 
 #define GLUT_KEY_SHIFT 112
 
-Camera* cam = new Camera(*(new Point(0.0f, 1.0f, 7.0f)), *(new Point(0.0f, 0.0f, -1.0f)), 0.1f, 0.05f);
+Camera* cam = new Camera(*(new Point(0, 1, 7)), *(new Point(0, 0, -1)), 0.1, 0.05);
 Model building;
 
 float door_angle = 0.0f;
@@ -22,14 +22,32 @@ void init() {
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
-    building.addFace(new Point(0.3, -1.5, 1), new Point(0.3, 0, 1), new Point(2, 0, 1), new Point(2, -1.5, 1),
-            new Color(1.0f, 0.0f, 0.65f));
-    building.addFace(new Point(2, 0, -1), new Point(2, -1.5, -1), new Color(1.0f, 0.0f, 0.65f));
-    building.addFace(new Point(-2, 0, -1), new Point(-2, -1.5, -1), new Color(1.0f, 0.0f, 0.65f));
-    building.addFace(new Point(-2, 0, 1), new Point(-2, -1.5, 1), new Color(1.0f, 0.0f, 0.65f));
-    building.addFace(new Point(-0.3, 0, 1), new Point(-0.3, -1.5, 1), new Color(1.0f, 0.0f, 0.65f));
-    building.addFace(new Point(-0.3, -0.25, 1), new Point(-0.3, 0, 1), new Point(0.3, 0, 1), new Point(0.3, -0.25, 1),
-                     new Color(1.0f, 0.0f, 0.65f));
+    // Walls
+    building.addRectFace(new Point(0.3, -1.5, 1), new Point(0.3, 0, 1), new Point(2, 0, 1), new Point(2, -1.5, 1),
+            new Color(1.0, 0.0, 0.65));
+    building.addRectFace(new Point(2, 0, -1), new Point(2, -1.5, -1), new Color(1, 0, 0.65));
+    building.addRectFace(new Point(-2, 0, -1), new Point(-2, -1.5, -1), new Color(1, 0, 0.65));
+    building.addRectFace(new Point(-2, 0, 1), new Point(-2, -1.5, 1), new Color(1, 0, 0.65));
+    building.addRectFace(new Point(-0.3, 0, 1), new Point(-0.3, -1.5, 1), new Color(1, 0, 0.65));
+    building.addRectFace(new Point(-0.3, -0.25, 1), new Point(-0.3, 0, 1), new Point(0.3, 0, 1), new Point(0.3, -0.25, 1),
+            new Color(1, 0, 0.65));
+    building.addTriangFace(new Point(2, 0.5, 0), new Point(2, 0, -1), new Point(2, 0, 1), new Color(1, 0, 0.65));
+    building.addTriangFace(new Point(-2, 0.5, 0), new Point(-2, 0, 1), new Point(-2, 0, -1), new Color(1, 0, 0.65));
+
+    // Roof
+    building.addRectFace(new Point(2.2, -0.1, 1.25), new Point(-2.2, -0.1, 1.25), new Point(-2.2, 0.5, 0), new Point(2.2, 0.5, 0),
+            new Color(1, 0, 0));
+    building.addRectFace(new Point(-2.2, -0.1, -1.25), new Point(2.2, -0.1, -1.25), new Color(1, 0, 0));
+
+    // Windows
+    building.addRectFace(new Point(-0.75, -0.8, 1.0001), new Point(-1.5, -0.8, 1.0001), new Point(-1.5, -0.3, 1.0001), new Point(-0.75, -0.3, 1.0001),
+            new Color(0.5, 1, 5));
+    building.addRectFace(new Point(1.5, -0.8, 1.0001), new Point(0.75, -0.8, 1.0001), new Point(0.75, -0.3, 1.0001), new Point(1.5, -0.3, 1.0001),
+            new Color(0.5, 1, 5));
+    building.addRectFace(new Point(-1.5, -0.8, -1.0001), new Point(-0.75, -0.8, -1.0001), new Point(-0.75, -0.3, -1.0001), new Point(-1.5, -0.3, -1.0001),
+            new Color(0.5, 1, 5));
+    building.addRectFace(new Point(0.75, -0.8, -1.0001), new Point(1.5, -0.8, -1.0001), new Point(1.5, -0.3, -1.0001), new Point(0.75, -0.3, -1.0001),
+            new Color(0.5, 1, 5));
 }
 
 void drawHouse() {
@@ -37,91 +55,16 @@ void drawHouse() {
     // Front side
     glPushMatrix();
     glTranslatef(0.0f, 1.3f, 0.0f);
-    glColor3f(0.0f, 0.0f, 0.65f);
 
     for (auto &face : building.faces) {
         glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
-        glBegin(GL_QUADS);
+        glBegin(GL_POLYGON);
         for (auto &point : face->points) {
             glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
         }
         glEnd();
     }
 
-    glColor3f(0.4f, 0.0f, 0.0f);
-    glBegin(GL_QUADS);  // Roof
-    glVertex3f(-2.2, 0.5, 0);
-    glVertex3f(2.2, 0.5, 0);
-    glVertex3f(2.2, -0.1, 1.25);
-    glVertex3f(-2.2, -0.1, 1.25);
-    glEnd();
-
-    glColor3f(0.7f, 0.7f, 0.0f);
-    glBegin(GL_QUADS);  // Window Left
-    glVertex3f(-1.5, -0.3, 1.0001);
-    glVertex3f(-0.75, -0.3, 1.0001);
-    glVertex3f(-0.75, -0.8, 1.0001);
-    glVertex3f(-1.5, -0.8, 1.0001);
-    glEnd();
-
-    glColor3f(0.0f, 0.0f, 0.0f);
-    glBegin(GL_QUADS);  // Window Right
-    glVertex3f(1.5, -0.3, 1.0001);
-    glVertex3f(0.75, -0.3, 1.0001);
-    glVertex3f(0.75, -0.8, 1.0001);
-    glVertex3f(1.5, -0.8, 1.0001);
-    glEnd();
-    glPopMatrix();
-
-    // Back side
-    glPushMatrix();
-    glTranslatef(0.0f, 1.3f, 0.0f);
-
-    glColor3f(0.4f, 0.0f, 0.0f);
-    glBegin(GL_QUADS);  // Roof
-    glVertex3f(-2.2, 0.5, 0);
-    glVertex3f(2.2, 0.5, 0);
-    glVertex3f(2.2, -0.1, -1.25);
-    glVertex3f(-2.2, -0.1, -1.25);
-    glEnd();
-
-    glBegin(GL_QUADS);  // Window Left
-    glVertex3f(-1.5, -0.3, -1.0001);
-    glVertex3f(-0.75, -0.3, -1.0001);
-    glVertex3f(-0.75, -0.8, -1.0001);
-    glVertex3f(-1.5, -0.8, -1.0001);
-    glEnd();
-
-    glBegin(GL_QUADS);  // Window Right
-    glVertex3f(1.5, -0.3, -1.0001);
-    glVertex3f(0.75, -0.3, -1.0001);
-    glVertex3f(0.75, -0.8, -1.0001);
-    glVertex3f(1.5, -0.8, -1.0001);
-    glEnd();
-    glPopMatrix();
-
-    // Right side
-    glPushMatrix();
-    glTranslatef(0.0f, 1.3f, 0.0f);
-    glColor3f(0.0f, 0.0f, 0.65f);
-
-    glBegin(GL_TRIANGLES);  // Wall Upper
-    glVertex3f(2, 0.5, 0);
-    glVertex3f(2, 0, 1);
-    glVertex3f(2, 0, -1);
-    glEnd();
-    glPopMatrix();
-
-    // Left side
-    glPushMatrix();
-    glTranslatef(0.0f, 1.3f, 0.0f);
-    glColor3f(0.0f, 0.0f, 0.65f);
-
-    glBegin(GL_TRIANGLES);  // Wall Upper
-    glVertex3f(-2, 0.5, 0);
-    glVertex3f(-2, 0, 1);
-    glVertex3f(-2, 0, -1);
-    glEnd();
     glPopMatrix();
 }
 
@@ -206,10 +149,6 @@ void updateDoor() {
 }
 
 void renderScene(void) {
-
-    // Para ver os objetos em modo polígono (somente os traços)
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
     // Clear Color and Depth Buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -217,6 +156,7 @@ void renderScene(void) {
     glLoadIdentity();
 
     // Set the camera
+    updateCamera();
     gluLookAt(cam->position.x, cam->position.y, cam->position.z,
               cam->position.x + cam->direction.x, cam->position.y + cam->direction.y, cam->position.z + cam->direction.z,
               0.0f, 1.0f, 0.0f);
@@ -231,10 +171,9 @@ void renderScene(void) {
     glEnd();
 
     drawHouse();
-    drawDoor();
-    updateDoor();
 
-    updateCamera();
+    updateDoor();
+    drawDoor();
 
     glFlush();
     glutSwapBuffers();
@@ -252,11 +191,11 @@ void keyboardUpHandler(unsigned char key, int x, int y) {
     keyPressed[key] = false;
 }
 
-void specialFuncHandler(int key, int xx, int yy) {
+void specialFuncHandler(int key, int x, int y) {
     specialKeyPressed[key] = true;
 }
 
-void specialFuncUpHandler(int key, int xx, int yy) {
+void specialFuncUpHandler(int key, int x, int y) {
     specialKeyPressed[key] = false;
 }
 

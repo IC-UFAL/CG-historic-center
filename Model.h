@@ -13,9 +13,11 @@ public:
     vector<Face*> faces;
     stack<Point*> lastPoints;
 
-    void addFace(Point* p1, Point* p2, Point* p3, Point* p4, Color* color);
+    void addRectFace(Point* p1, Point* p2, Point* p3, Point* p4, Color* color);
 
-    void addFace(Point* p3, Point* p4, Color* color);
+    void addRectFace(Point* p3, Point* p4, Color* color);
+
+    void addTriangFace(Point* p1, Point* p2, Point* p3, Color* color);
 };
 
 #endif //HISTORIC_CENTER_MODEL_H
