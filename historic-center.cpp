@@ -20,12 +20,16 @@
 #define COLOR_DOOR new Color(77, 57, 36)
 #define COLOR_STATIC_WINDOW new Color(100, 80, 60)
 
-Camera *cam = new Camera(*(new Point(15, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.1, 0.05);
+Camera *cam = new Camera(*(new Point(15, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.03, 0.001);
 Model building;
+
+static unsigned int redisplay_interval = 1000 / 60;
 
 float door_angle = 0.0f;
 
 bool keyPressed[256], specialKeyPressed[256];
+
+void update(int);
 
 void init() {
     // sky color
@@ -275,7 +279,6 @@ void updateCamera() {
         cam->lookDown();
     }
 
-    glutPostRedisplay();
 }
 
 void updateDoor() {
@@ -285,6 +288,14 @@ void updateDoor() {
     if (keyPressed['c'])
         if (door_angle >= 2.0f)
             door_angle -= 2.0f;
+}
+
+void update(int) {
+    updateCamera();
+    updateDoor();
+
+    glutPostRedisplay();
+    glutTimerFunc(redisplay_interval, update, 0);
 }
 
 void renderScene() {
