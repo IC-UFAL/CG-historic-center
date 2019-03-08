@@ -32,6 +32,7 @@ bool keyPressed[256], specialKeyPressed[256];
 void update(int);
 
 void init() {
+    int axisY[3] = {0, 1, 0}, axisZ[] = {0, 0, 1};
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
@@ -141,25 +142,24 @@ void init() {
     building.addCube(new Point(17.2, 2, -1.55), 1.6, 3, 0.1, COLOR_DOOR);
 
     // Static right windows
-    int axis[3] = {0, 1, 0};
-    building.addCube(new Point(29.95, 2.5, -2.5), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(29.95, 2.5, -7.1), 0.8, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(29.95, 2.5, -11), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(29.95, 2.5, -2.5), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(29.95, 2.5, -7.1), 0.8, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(29.95, 2.5, -11), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
 
-    building.addCube(new Point(29.95, 6.5, -7.1), 0.8, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(29.95, 6.5, -2.5), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(29.95, 6.5, -11), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(29.95, 6.5, -7.1), 0.8, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(29.95, 6.5, -2.5), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(29.95, 6.5, -11), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
 
     // Static left windows
-    building.addCube(new Point(-0.05, 2.5, -2.5), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(-0.05, 2.5, -7.1), 0.8, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(-0.05, 2.5, -11), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(-0.05, 2.5, -2.5), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(-0.05, 2.5, -7.1), 0.8, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(-0.05, 2.5, -11), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
 
-    building.addCube(new Point(-0.05, 6.5, -7.1), 0.8, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(-0.05, 6.5, -2.5), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
-    building.addCube(new Point(-0.05, 6.5, -11), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(-0.05, 6.5, -7.1), 0.8, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(-0.05, 6.5, -2.5), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(-0.05, 6.5, -11), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
 
-    // Ceiling
+    // Ceiling facade
     building.addRectFace(new Point(10.5, 10, 0), new Point(10.5, 11, 0), new Point(19.5, 11, 0), new Point(19.5, 10, 0),
                          COLOR_EXTERNAL_DETAILS);
     building.addRectFace(new Point(19.5, 11, -1.5), new Point(19.5, 10, -1.5), COLOR_EXTERNAL_DETAILS);
@@ -175,6 +175,14 @@ void init() {
     building.addRectFace(new Point(10.5, 11, 0), new Point(10.5, 10, 0), COLOR_EXTERNAL_DETAILS);
     building.addRectFace(new Point(10.5, 10, 0), new Point(10.5, 10, -1.5), new Point(19.5, 10, -1.5),
                          new Point(19.5, 10, 0), COLOR_EXTERNAL_DETAILS);
+
+    // Ceiling
+    building.addCube(new Point(10, 11, -1.5), 10, 0.15, 2, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(10, 11, -1.5), float(5 / 0.85), 0.15, 2, 30, axisZ, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(20, 11, -1.5), float(5 / 0.85), 0.15, 2, new Point(-float(5 / 0.85) / 2, 0.075, 1), -30,
+                     axisZ, COLOR_EXTERNAL_WALL);
+    building.addTriangFace(new Point(10, 11, 0), new Point(15, 11 + 5 * 0.57735026919, 0), new Point(20, 11, 0),
+                           COLOR_EXTERNAL_DETAILS);
 
 //    glPushMatrix();
 //    glColor3f(0, 0, 0);
