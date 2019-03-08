@@ -10,7 +10,7 @@ void Model::addRectFace(Point *p1, Point *p2, Point *p3, Point *p4, Color *color
     while (!lastPoints.empty())
         lastPoints.pop();
 
-    Point* points[] = {p1, p2, p3, p4};
+    Point *points[] = {p1, p2, p3, p4};
     faces.push_back(new Face(4, points, color));
     lastPoints.push(p3);
     lastPoints.push(p4);
@@ -29,7 +29,7 @@ void Model::addTriangFace(Point *p1, Point *p2, Point *p3, Color *color) {
     while (!lastPoints.empty())
         lastPoints.pop();
 
-    Point* points[] = {p1, p2, p3};
+    Point *points[] = {p1, p2, p3};
     faces.push_back(new Face(3, points, color));
     lastPoints.push(p2);
     lastPoints.push(p3);
@@ -40,4 +40,14 @@ void Model::addFace(Face *face) {
         lastPoints.pop();
 
     faces.push_back(face);
+}
+
+void Model::addCube(Point *pos, float width, float height, float depth, Point *rotPoint, float rotAngle, int *rotAxis,
+                    Color *color) {
+    cubes.push_back(new Cube(pos, width, height, depth, rotPoint, rotAngle, rotAxis, color));
+}
+
+void Model::addCube(Point *pos, float width, float height, float depth, Color *color) {
+    int axis[] = {0, 0, 0};
+    addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), 0, axis, color);
 }

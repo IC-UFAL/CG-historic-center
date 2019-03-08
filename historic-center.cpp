@@ -132,30 +132,40 @@ void init() {
                          new Point(22.5, 2, -1.5), COLOR_EXTERNAL_WALL);
 
     // Static windows
-    building.addRectFace(new Point(3, 2.5, 0.01), new Point(3, 5, 0.01), new Point(4.5, 5, 0.01),
-                         new Point(4.5, 2.5, 0.01), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(25.5, 2.5, 0.01), new Point(25.5, 5, 0.01), new Point(27, 5, 0.01),
-                         new Point(27, 2.5, 0.01), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(8.6, 2.5, -1.49), new Point(8.6, 5, -1.49), new Point(9.5, 5, -1.49),
-                         new Point(9.5, 2.5, -1.49), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(20.5, 2.5, -1.49), new Point(20.5, 5, -1.49), new Point(21.4, 5, -1.49),
-                         new Point(21.4, 2.5, -1.49), COLOR_STATIC_WINDOW);
+    building.addCube(new Point(3, 2.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(25.5, 2.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(8.6, 2.5, -1.55), 0.9, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(20.5, 2.5, -1.55), 0.9, 2.5, 0.1, COLOR_STATIC_WINDOW);
 
-    building.addRectFace(new Point(3, 6.5, 0.01), new Point(3, 9, 0.01), new Point(4.5, 9, 0.01),
-                         new Point(4.5, 6.5, 0.01), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(25.5, 6.5, 0.01), new Point(25.5, 9, 0.01), new Point(27, 9, 0.01),
-                         new Point(27, 6.5, 0.01), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(8.6, 6.5, -1.49), new Point(8.6, 9, -1.49), new Point(9.5, 9, -1.49),
-                         new Point(9.5, 6.5, -1.49), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(11.4, 6.5, -1.49), new Point(11.4, 9, -1.49), new Point(12.6, 9, -1.49),
-                         new Point(12.6, 6.5, -1.49), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(14.4, 6.5, -1.49), new Point(14.4, 9, -1.49), new Point(15.6, 9, -1.49),
-                         new Point(15.6, 6.5, -1.49), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(17.4, 6.5, -1.49), new Point(17.4, 9, -1.49), new Point(18.6, 9, -1.49),
-                         new Point(18.6, 6.5, -1.49), COLOR_STATIC_WINDOW);
-    building.addRectFace(new Point(20.5, 6.5, -1.49), new Point(20.5, 9, -1.49), new Point(21.4, 9, -1.49),
-                         new Point(21.4, 6.5, -1.49), COLOR_STATIC_WINDOW);
+    building.addCube(new Point(3, 6.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(25.5, 6.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(8.6, 6.5, -1.55), 0.9, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(11.4, 6.5, -1.55), 1.2, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(14.4, 6.5, -1.55), 1.2, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(17.4, 6.5, -1.55), 1.2, 2.5, 0.1, COLOR_STATIC_WINDOW);
+    building.addCube(new Point(20.5, 6.5, -1.55), 0.9, 2.5, 0.1, COLOR_STATIC_WINDOW);
+
+    // Static doors
+    building.addCube(new Point(11.2, 2, -1.55), 1.6, 3, 0.1, COLOR_DOOR);
+    building.addCube(new Point(17.2, 2, -1.55), 1.6, 3, 0.1, COLOR_DOOR);
 }
+
+void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
+              Color *color) {
+    glPushMatrix();
+    glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
+    glTranslatef(GLfloat(p->x), GLfloat(p->y), GLfloat(p->z));
+    glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    glTranslatef(GLfloat(rotationPoint->x), GLfloat(rotationPoint->y), GLfloat(rotationPoint->z));
+    glScalef(width, height, depth);
+    glutSolidCube(1.0);
+    glPopMatrix();
+}
+
+//void drawCube(Point *p, float width, float height, float depth, Color *color) {
+//    int rotationAxis[3] = {0, 0, 0};
+//    drawCube(p, width, height, depth, 0, rotationAxis, new Point(width / 2, height / 2, depth / 2), color);
+//}
 
 void drawBuilding() {
     for (auto &face : building.faces) {
@@ -166,31 +176,24 @@ void drawBuilding() {
         }
         glEnd();
     }
+
+    for (auto &cube : building.cubes) {
+        glColor3f(GLfloat(cube->color->R), GLfloat(cube->color->G), GLfloat(cube->color->B));
+        drawCube(cube->position, cube->width, cube->height, cube->depth, cube->rotationPoint, cube->rotationAngle,
+                 cube->rotationAxis, cube->color);
+        glEnd();
+    }
 }
 
 void drawDoor() {
     auto *doorColor = COLOR_DOOR;
+    int orientation[] = {0, 1, 0};
     // Left
-    glPushMatrix();
-    glTranslatef(14, 0, -1.5f);
-    glRotatef(door_angle, 0, 1, 0);
-    glTranslatef(0.5f, 3.5, 0.05f);
-    glColor3f(GLfloat(doorColor->R), GLfloat(doorColor->G), GLfloat(doorColor->B));
-    glScalef(1, 3, 0.1f);
-    glutSolidCube(1.0);
-    glPopMatrix();
+    drawCube(new Point(14, 2, -1.5), 1, 3, 0.1, new Point(0.5, 1.5, 0.05), door_angle, orientation, doorColor);
 
     // Right
-    glPushMatrix();
-    glTranslatef(16, 0, -1.5f);
-    glRotatef(180.0f, 0, 1, 0);
-    glRotatef(door_angle, 0, -1, 0);
-    glTranslatef(0.5f, 3.5, -0.05f);
-    glColor3f(GLfloat(doorColor->R), GLfloat(doorColor->G), GLfloat(doorColor->B));
-    glScalef(1, 3, 0.1f);
-    glutSolidCube(1.0);
-    glPopMatrix();
-
+    orientation[1] = -1;
+    drawCube(new Point(16, 2, -1.5), 1, 3, 0.1, new Point(-0.5, 1.5, 0.05), door_angle, orientation, doorColor);
 }
 
 void changeSize(int w, int h) {
