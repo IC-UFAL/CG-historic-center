@@ -18,6 +18,8 @@ public:
     void addRectFace(Point* p3, Point* p4, Color* color);
 
     void addTriangFace(Point* p1, Point* p2, Point* p3, Color* color);
+
+    void addFace(Face* face);
 };
 
 #endif //HISTORIC_CENTER_MODEL_H

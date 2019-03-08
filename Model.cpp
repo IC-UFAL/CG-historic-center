@@ -34,3 +34,10 @@ void Model::addTriangFace(Point *p1, Point *p2, Point *p3, Color *color) {
     lastPoints.push(p2);
     lastPoints.push(p3);
 }
+
+void Model::addFace(Face *face) {
+    while (!lastPoints.empty())
+        lastPoints.pop();
+
+    faces.push_back(face);
+}

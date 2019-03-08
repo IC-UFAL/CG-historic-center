@@ -8,6 +8,8 @@ public:
     Color();
 
     Color(double r, double g, double b);
+
+    Color(int r, int g, int b);
 };
 
 #endif //HISTORIC_CENTER_COLOR_H

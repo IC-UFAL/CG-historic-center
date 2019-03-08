@@ -9,3 +9,9 @@ Color::Color(double r, double g, double b) {
     G = g;
     B = b;
 }
+
+Color::Color(int r, int g, int b) {
+    R = (r * 1.0) / 255;
+    G = (g * 1.0) / 255;
+    B = (b * 1.0) / 255;
+}
