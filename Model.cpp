@@ -51,3 +51,7 @@ void Model::addCube(Point *pos, float width, float height, float depth, Color *c
     int axis[] = {0, 0, 0};
     addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), 0, axis, color);
 }
+
+void Model::addCube(Point *pos, float width, float height, float depth, float rotAngle, int *rotAxis, Color *color) {
+    addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), rotAngle, rotAxis, color);
+}
