@@ -27,18 +27,6 @@ float door_angle = 0.0f;
 
 bool keyPressed[256], specialKeyPressed[256];
 
-void createPillarBase(Point *point, float height, Color *color) {
-    Point p = *point;
-    building.addRectFace(point, new Point(p.x, p.y + height, p.z), new Point(p.x + 1, p.y + height, p.z),
-                         new Point(p.x + 1, p.y, p.z),
-                         color);
-    building.addRectFace(new Point(p.x + 1, p.y + height, p.z - 1), new Point(p.x + 1, p.y, p.z - 1), color);
-    building.addRectFace(new Point(p.x, p.y + height, p.z - 1), new Point(p.x, p.y, p.z - 1), color);
-    building.addRectFace(new Point(p.x, p.y + height, p.z), new Point(p.x, p.y, p.z), color);
-    building.addRectFace(new Point(p.x, p.y + height, p.z), new Point(p.x, p.y + height, p.z - 1),
-                         new Point(p.x + 1, p.y + height, p.z - 1), new Point(p.x + 1, p.y + height, p.z), color);
-}
-
 void init() {
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
@@ -64,8 +52,7 @@ void init() {
 
     // Stairs
     building.addRectFace(new Point(10.5, 2, 0), new Point(19.5, 2, 0), new Point(19.5, 2, 0.35),
-                         new Point(10.5, 2, 0.35),
-                         COLOR_STAIRS_TOP);
+                         new Point(10.5, 2, 0.35), COLOR_STAIRS_TOP);
     building.addRectFace(new Point(19.5, 1.75, 0.35), new Point(10.5, 1.75, 0.35), COLOR_STAIRS_FRONT);
     building.addRectFace(new Point(19.5, 1.75, 0.7), new Point(10.5, 1.75, 0.7), COLOR_STAIRS_TOP);
     building.addRectFace(new Point(19.5, 1.5, 0.7), new Point(10.5, 1.5, 0.7), COLOR_STAIRS_FRONT);
@@ -83,12 +70,12 @@ void init() {
     building.addRectFace(new Point(19.5, 0.0, 3.05), new Point(10.5, 0.0, 3.05), COLOR_STAIRS_FRONT);
 
     // Pillars bases
-    createPillarBase(new Point(10, 0, 3.5), 1, COLOR_EXTERNAL_WALL);
-    createPillarBase(new Point(19, 0, 3.5), 1, COLOR_EXTERNAL_WALL);
-    createPillarBase(new Point(10, 0, 0.5), 2.5, COLOR_EXTERNAL_WALL);
-    createPillarBase(new Point(13, 0, 0.5), 2.5, COLOR_EXTERNAL_WALL);
-    createPillarBase(new Point(16, 0, 0.5), 2.5, COLOR_EXTERNAL_WALL);
-    createPillarBase(new Point(19, 0, 0.5), 2.5, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(10, 0, 2.5), 1, 1, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(19, 0, 2.5), 1, 1, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(10, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(13, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(16, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(19, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
 
     // Handrail flaps
     building.addRectFace(new Point(10.35, 0, 2.5), new Point(10.35, 0, 0.5), new Point(10.35, 2.3, 0.5),
@@ -169,8 +156,21 @@ void init() {
     building.addCube(new Point(-0.05, 6.5, -11), 1.5, 2.5, 0.1, 90, axis, COLOR_STATIC_WINDOW);
 
     // Ceiling
-//    building.addRectFace(new Point(10.5, 10, 0), new Point(10.5, 11, 0), new Point(19.5, 11, 0), new Point(19.5, 10, 0),
-//                     COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(10.5, 10, 0), new Point(10.5, 11, 0), new Point(19.5, 11, 0), new Point(19.5, 10, 0),
+                         COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(19.5, 11, -1.5), new Point(19.5, 10, -1.5), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(22, 11, -1.5), new Point(22.5, 10, -1.5), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(22, 11, 0.5), new Point(22.5, 10, 0), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(30.5, 11, 0.5), new Point(30, 10, 0), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(30.5, 11, -15.5), new Point(30, 10, -15), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(-0.5, 11, -15.5), new Point(0, 10, -15), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(-0.5, 11, 0.5), new Point(0, 10, 0), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(8, 11, 0.5), new Point(7.5, 10, 0), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(8, 11, -1.5), new Point(7.5, 10, -1.5), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(10.5, 11, -1.5), new Point(10.5, 10, -1.5), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(10.5, 11, 0), new Point(10.5, 10, 0), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(10.5, 10, 0), new Point(10.5, 10, -1.5), new Point(19.5, 10, -1.5),
+                         new Point(19.5, 10, 0), COLOR_EXTERNAL_DETAILS);
 
 //    glPushMatrix();
 //    glColor3f(0, 0, 0);
@@ -346,7 +346,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(50, 50);
     glutInitWindowSize(800, 600);
-    glutCreateWindow("CH - Associação Comercial no Jaraguá");
+    glutCreateWindow("CH - Associacao Comercial no Jaragua");
 
     init();
 
