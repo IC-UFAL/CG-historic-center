@@ -20,7 +20,7 @@
 #define COLOR_DOOR new Color(77, 57, 36)
 #define COLOR_STATIC_WINDOW new Color(100, 80, 60)
 
-Camera *cam = new Camera(*(new Point(15, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.3, 0.01);
+Camera *cam = new Camera(*(new Point(15, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
 Model building;
 
 static unsigned int redisplay_interval = 1000 / 60;
@@ -56,16 +56,12 @@ void init() {
                          new Point(25.3, 2, 0.3), COLOR_FLOOR);
 
     // Second floor
-    building.addRectFace(new Point(0.0, 5.0, 0.0), new Point(0.0, 5.0, -4.3), new Point(7.5, 5.0, -4.3),
-                         new Point(7.5, 5.0, 0.0), COLOR_FLOOR);
-    building.addRectFace(new Point(0.0, 5.0, -10.0), new Point(0.0, 5.0, -15.0), new Point(7.8, 5.0, -15.0),
-                         new Point(7.8, 5.0, -10.0), COLOR_FLOOR);
-    building.addRectFace(new Point(3.8, 5.0, -4.3), new Point(3.8, 5.0, -10.3), new Point(7.8, 5.0, -10.3),
-                         new Point(7.8, 5.0, -4.3), COLOR_FLOOR);
-    building.addRectFace(new Point(7.5, 5.0, -1.5), new Point(7.5, 5.0, -15.0), new Point(22.5, 5.0, -15.0),
-                         new Point(22.5, 5.0, -1.5), COLOR_FLOOR);
-    building.addRectFace(new Point(22.5, 5.0, 0.0), new Point(22.5, 5.0, -15.0), new Point(30.0, 5.0, -15.0),
-                         new Point(30.0, 5.0, 0.0), COLOR_FLOOR);
+    building.addRectFace(new Point(0.0, 6, 0.0), new Point(0.0, 6, -4.3), new Point(5, 6, -4.3),
+                         new Point(5, 6, 0.0), COLOR_FLOOR);
+    building.addRectFace(new Point(5, 6, -1.5), new Point(5, 6, -10), new Point(20, 6, -10),
+                         new Point(20, 6, -1.5), COLOR_FLOOR);
+    building.addRectFace(new Point(20, 6, 0.0), new Point(20, 6, -10), new Point(25, 6, -10),
+                         new Point(25, 6, 0.0), COLOR_FLOOR);
 
     // External stairs
     building.addRectFace(new Point(8, 2, 0), new Point(17, 2, 0), new Point(17, 2, 0.35),
@@ -87,32 +83,32 @@ void init() {
     building.addRectFace(new Point(17, 0.0, 3.05), new Point(8, 0.0, 3.05), COLOR_STAIRS_FRONT);
 
     // Internal stairs
-    building.addRectFace(new Point(3.8, 2, -7.3), new Point(3.8, 2, -10.3), new Point(3.8, 2.25, -10.3),
-                         new Point(3.8, 2.25, -7.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(3.5, 2.25, -10.3), new Point(3.5, 2.25, -7.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(3.5, 2.5, -10.3), new Point(3.5, 2.5, -7.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(3.2, 2.5, -10.3), new Point(3.2, 2.5, -7.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(3.2, 2.75, -10.3), new Point(3.2, 2.75, -7.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(2.9, 2.75, -10.3), new Point(2.9, 2.75, -7.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(2.9, 3, -10.3), new Point(2.9, 3, -7.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(2.6, 3, -10.3), new Point(2.6, 3, -7.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(2.6, 3.25, -10.3), new Point(2.6, 3.25, -7.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(2.3, 3.25, -10.3), new Point(2.3, 3.25, -7.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(2.3, 3.5, -10.3), new Point(2.3, 3.5, -7.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(0.0, 3.5, -10.3), new Point(0.0, 3.5, -7.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(0.0, 3.5, -4.3), new Point(0.0, 3.5, -7.3), new Point(2.3, 3.5, -7.3),
+    building.addRectFace(new Point(3.8, 2, -7), new Point(3.8, 2, -10), new Point(3.8, 2.25, -10),
+                         new Point(3.8, 2.25, -7), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(3.5, 2.25, -10), new Point(3.5, 2.25, -7), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(3.5, 2.5, -10), new Point(3.5, 2.5, -7), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(3.2, 2.5, -10), new Point(3.2, 2.5, -7), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(3.2, 2.75, -10), new Point(3.2, 2.75, -7), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(2.9, 2.75, -10), new Point(2.9, 2.75, -7), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(2.9, 3, -10), new Point(2.9, 3, -7), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(2.6, 3, -10), new Point(2.6, 3, -7), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(2.6, 3.25, -10), new Point(2.6, 3.25, -7), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(2.3, 3.25, -10), new Point(2.3, 3.25, -7), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(2.3, 3.5, -10), new Point(2.3, 3.5, -7), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(0.0, 3.5, -10), new Point(0.0, 3.5, -7), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(0.0, 3.5, -4.3), new Point(0.0, 3.5, -7), new Point(2.3, 3.5, -7),
                          new Point(2.3, 3.5, -4.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(2.3, 3.75, -7.3), new Point(2.3, 3.75, -4.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(2.6, 3.75, -7.3), new Point(2.6, 3.75, -4.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(2.6, 4.0, -7.3), new Point(2.6, 4.0, -4.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(2.9, 4.0, -7.3), new Point(2.9, 4.0, -4.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(2.9, 4.25, -7.3), new Point(2.9, 4.25, -4.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(3.2, 4.25, -7.3), new Point(3.2, 4.25, -4.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(3.2, 4.5, -7.3), new Point(3.2, 4.5, -4.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(3.5, 4.5, -7.3), new Point(3.5, 4.5, -4.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(3.5, 4.75, -7.3), new Point(3.5, 4.75, -4.3), COLOR_STAIRS_FRONT);
-    building.addRectFace(new Point(3.8, 4.75, -7.3), new Point(3.8, 4.75, -4.3), COLOR_STAIRS_TOP);
-    building.addRectFace(new Point(3.8, 5.0, -7.3), new Point(3.8, 5.0, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(2.3, 3.75, -7), new Point(2.3, 3.75, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(2.6, 3.75, -7), new Point(2.6, 3.75, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(2.6, 4.0, -7), new Point(2.6, 4.0, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(2.9, 4.0, -7), new Point(2.9, 4.0, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(2.9, 4.25, -7), new Point(2.9, 4.25, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(3.2, 4.25, -7), new Point(3.2, 4.25, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(3.2, 4.5, -7), new Point(3.2, 4.5, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(3.5, 4.5, -7), new Point(3.5, 4.5, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(3.5, 4.75, -7), new Point(3.5, 4.75, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(3.8, 4.75, -7), new Point(3.8, 4.75, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(3.8, 5.0, -7), new Point(3.8, 5.0, -4.3), COLOR_STAIRS_FRONT);
 
 
     // Pillars bases
