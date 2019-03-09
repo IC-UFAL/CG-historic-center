@@ -20,7 +20,7 @@
 #define COLOR_DOOR new Color(77, 57, 36)
 #define COLOR_STATIC_WINDOW new Color(100, 80, 60)
 
-Camera *cam = new Camera(*(new Point(15, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
+Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
 Model building;
 
 static unsigned int redisplay_interval = 1000 / 60;
@@ -32,7 +32,7 @@ bool keyPressed[256], specialKeyPressed[256];
 void update(int);
 
 void init() {
-    int axisY[3] = {0, 1, 0}, axisZ[] = {0, 0, 1};
+    static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1};
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
@@ -259,7 +259,7 @@ void drawBuilding() {
 }
 
 void drawDoor() {
-    auto *doorColor = COLOR_DOOR;
+    auto *doorColor = new Color();
     int orientation[] = {0, 1, 0};
     // Left
     drawCube(new Point(11.5, 2, -1.5), 1, 3, 0.1, new Point(0.5, 1.5, 0.05), door_angle, orientation, doorColor);
@@ -335,15 +335,13 @@ void updateDoor() {
             door_angle -= 2.0f;
 }
 
-void update(int) {
+void update() {
     updateCamera();
     updateDoor();
-
-    glutPostRedisplay();
-    glutTimerFunc(redisplay_interval, update, 0);
 }
 
-void renderScene() {
+void renderScene(int) {
+    update();
     // Clear Color and Depth Buffers
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -351,7 +349,6 @@ void renderScene() {
     glLoadIdentity();
 
     // Set the camera
-    updateCamera();
     gluLookAt(cam->position.x, cam->position.y, cam->position.z,
               cam->position.x + cam->direction.x, cam->position.y + cam->direction.y,
               cam->position.z + cam->direction.z,
@@ -367,14 +364,16 @@ void renderScene() {
     glEnd();
 
     drawBuilding();
-
-    updateDoor();
     drawDoor();
 
     glFlush();
     glutSwapBuffers();
+    glutTimerFunc(redisplay_interval, renderScene, 0);
 }
 
+void renderScene() {
+    renderScene(0);
+}
 
 void keyboardHandler(unsigned char key, int x, int y) {
     keyPressed[key] = true;
@@ -409,7 +408,8 @@ int main(int argc, char **argv) {
     // register callbacks
     glutDisplayFunc(renderScene);
     glutReshapeFunc(changeSize);
-    glutIdleFunc(renderScene);
+//    glutIdleFunc(update);
+    glutTimerFunc(redisplay_interval, renderScene, 0);
     glutKeyboardFunc(keyboardHandler);
     glutKeyboardUpFunc(keyboardUpHandler);
     glutSpecialFunc(specialFuncHandler);
