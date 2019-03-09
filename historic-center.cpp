@@ -15,6 +15,7 @@
 #define COLOR_EXTERNAL_WALL_2 new Color(249, 238, 186)
 #define COLOR_EXTERNAL_DETAILS new Color(255, 243, 191)
 #define COLOR_FLOOR new Color(1.0, 1.0, 1.0)
+#define COLOR_SECOND_FLOOR new Color(200, 0, 0)
 #define COLOR_STAIRS_FRONT new Color(0.7, 0.7, 0.7)
 #define COLOR_STAIRS_TOP new Color(0.55, 0.55, 0.55)
 #define COLOR_DOOR new Color(77, 57, 36)
@@ -57,11 +58,11 @@ void init() {
 
     // Second floor
     building.addRectFace(new Point(0.0, 6, 0.0), new Point(0.0, 6, -4.3), new Point(5, 6, -4.3),
-                         new Point(5, 6, 0.0), COLOR_FLOOR);
+                         new Point(5, 6, 0.0), COLOR_SECOND_FLOOR);
     building.addRectFace(new Point(5, 6, -1.5), new Point(5, 6, -10), new Point(20, 6, -10),
-                         new Point(20, 6, -1.5), COLOR_FLOOR);
+                         new Point(20, 6, -1.5), COLOR_SECOND_FLOOR);
     building.addRectFace(new Point(20, 6, 0.0), new Point(20, 6, -10), new Point(25, 6, -10),
-                         new Point(25, 6, 0.0), COLOR_FLOOR);
+                         new Point(25, 6, 0.0), COLOR_SECOND_FLOOR);
 
     // External stairs
     building.addRectFace(new Point(8, 2, 0), new Point(17, 2, 0), new Point(17, 2, 0.35),
@@ -109,6 +110,14 @@ void init() {
     building.addRectFace(new Point(3.5, 4.75, -7), new Point(3.5, 4.75, -4.3), COLOR_STAIRS_FRONT);
     building.addRectFace(new Point(3.8, 4.75, -7), new Point(3.8, 4.75, -4.3), COLOR_STAIRS_TOP);
     building.addRectFace(new Point(3.8, 5.0, -7), new Point(3.8, 5.0, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(4.1, 5.0, -7), new Point(4.1, 5.0, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(4.1, 5.25, -7), new Point(4.1, 5.25, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(4.4, 5.25, -7), new Point(4.4, 5.25, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(4.4, 5.5, -7), new Point(4.4, 5.5, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(4.7, 5.5, -7), new Point(4.7, 5.5, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(4.7, 5.75, -7), new Point(4.7, 5.75, -4.3), COLOR_STAIRS_FRONT);
+    building.addRectFace(new Point(5.0, 5.75, -7), new Point(5.0, 5.75, -4.3), COLOR_STAIRS_TOP);
+    building.addRectFace(new Point(5.0, 6.0, -7), new Point(5.0, 6.0, -4.3), COLOR_STAIRS_FRONT);
 
 
     // Pillars bases
