@@ -278,6 +278,15 @@ void drawDoor() {
     drawCube(new Point(13.5, 2, -1.5), 1, 3, 0.1, new Point(-0.5, 1.5, 0.05), door_angle, orientation, doorColor);
 }
 
+void drawCylinder() {
+    glPushMatrix();
+    glTranslatef(25.3f, 1.3f, 1.3f);
+    glColor3f(1.0f, 1.0f, 1.0f);
+    glRotatef(90.0f, 0.0f,1.0f,0.0f);
+    gluCylinder(gluNewQuadric(), 0.5f, 0.5f, 1.8f, 32, 32);
+    glPopMatrix();
+}
+
 void changeSize(int w, int h) {
 
     // Prevent a divide by zero, when window is too short
@@ -374,6 +383,8 @@ void renderScene(int) {
 
     drawBuilding();
     drawDoor();
+
+    drawCylinder();
 
     glFlush();
     glutSwapBuffers();
