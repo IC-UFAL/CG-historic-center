@@ -55,6 +55,18 @@ void init() {
     building.addRectFace(new Point(22.2, 2, 0.3), new Point(22.2, 2, -15.3), new Point(30.3, 2, -15.3),
                          new Point(30.3, 2, 0.3), COLOR_FLOOR);
 
+    // Second floor
+    building.addRectFace(new Point(0.0, 5.0, 0.0), new Point(0.0, 5.0, -4.3), new Point(7.5, 5.0, -4.3),
+                         new Point(7.5, 5.0, 0.0), COLOR_FLOOR);
+    building.addRectFace(new Point(0.0, 5.0, -10.0), new Point(0.0, 5.0, -15.0), new Point(7.8, 5.0, -15.0),
+                         new Point(7.8, 5.0, -10.0), COLOR_FLOOR);
+    building.addRectFace(new Point(3.8, 5.0, -4.3), new Point(3.8, 5.0, -10.3), new Point(7.8, 5.0, -10.3),
+                         new Point(7.8, 5.0, -4.3), COLOR_FLOOR);
+    building.addRectFace(new Point(7.5, 5.0, -1.5), new Point(7.5, 5.0, -15.0), new Point(22.5, 5.0, -15.0),
+                         new Point(22.5, 5.0, -1.5), COLOR_FLOOR);
+    building.addRectFace(new Point(22.5, 5.0, 0.0), new Point(22.5, 5.0, -15.0), new Point(30.0, 5.0, -15.0),
+                         new Point(30.0, 5.0, 0.0), COLOR_FLOOR);
+
     // External stairs
     building.addRectFace(new Point(10.5, 2, 0), new Point(19.5, 2, 0), new Point(19.5, 2, 0.35),
                          new Point(10.5, 2, 0.35), COLOR_STAIRS_TOP);
