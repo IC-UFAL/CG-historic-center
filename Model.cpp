@@ -55,3 +55,7 @@ void Model::addCube(Point *pos, float width, float height, float depth, Color *c
 void Model::addCube(Point *pos, float width, float height, float depth, float rotAngle, int *rotAxis, Color *color) {
     addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), rotAngle, rotAxis, color);
 }
+
+void Model::addCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotAxis[3], Color *color) {
+    cylinders.push_back(new Cylinder(pos, base, top, height, rotAngle, rotAxis, color));
+}

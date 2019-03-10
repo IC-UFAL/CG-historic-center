@@ -20,6 +20,7 @@
 #define COLOR_STAIRS_TOP new Color(0.55, 0.55, 0.55)
 #define COLOR_DOOR new Color(77, 57, 36)
 #define COLOR_STATIC_WINDOW new Color(100, 80, 60)
+#define COLOR_PILLAR new Color(255, 243, 202)
 
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
 Model building;
@@ -33,7 +34,7 @@ bool keyPressed[256], specialKeyPressed[256];
 void update(int);
 
 void init() {
-    static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1};
+    static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
@@ -230,11 +231,12 @@ void init() {
     building.addTriangFace(new Point(7.5, 11, 0), new Point(12.5, 11 + 5 * 0.57735026919, 0), new Point(17.5, 11, 0),
                            COLOR_EXTERNAL_DETAILS);
 
-//    glPushMatrix();
-//    glColor3f(0, 0, 0);
-//    glTranslatef(-5, 5, 0);
-//    gluCylinder(gluNewQuadric(), 0.5, 0.5, 10, 8, 100);
-//    glPopMatrix();
+    // External pillars
+    building.addCylinder(new Point(11.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
+
 }
 
 void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
@@ -246,6 +248,15 @@ void drawCube(Point *p, float width, float height, float depth, Point *rotationP
     glTranslatef(GLfloat(rotationPoint->x), GLfloat(rotationPoint->y), GLfloat(rotationPoint->z));
     glScalef(width, height, depth);
     glutSolidCube(1.0);
+    glPopMatrix();
+}
+
+void drawCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotationAxis[3], Color *color) {
+    glPushMatrix();
+    glTranslatef(GLfloat(pos->x), GLfloat(pos->y), GLfloat(pos->z));
+    glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
+    glRotatef(rotAngle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    gluCylinder(gluNewQuadric(), base, top, height, 50, 50);
     glPopMatrix();
 }
 
@@ -265,6 +276,11 @@ void drawBuilding() {
                  cube->rotationAxis, cube->color);
         glEnd();
     }
+
+    for (auto &cylinder : building.cylinders) {
+        drawCylinder(cylinder->position, cylinder->base, cylinder->top, cylinder->height, cylinder->rotationAngle,
+                 cylinder->rotationAxis, cylinder->color);
+    }
 }
 
 void drawDoor() {
@@ -276,15 +292,6 @@ void drawDoor() {
     // Right
     orientation[1] = -1;
     drawCube(new Point(13.5, 2, -1.5), 1, 3, 0.1, new Point(-0.5, 1.5, 0.05), door_angle, orientation, doorColor);
-}
-
-void drawCylinder() {
-    glPushMatrix();
-    glTranslatef(25.3f, 1.3f, 1.3f);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glRotatef(90.0f, 0.0f,1.0f,0.0f);
-    gluCylinder(gluNewQuadric(), 0.5f, 0.5f, 1.8f, 32, 32);
-    glPopMatrix();
 }
 
 void changeSize(int w, int h) {
@@ -383,8 +390,6 @@ void renderScene(int) {
 
     drawBuilding();
     drawDoor();
-
-    drawCylinder();
 
     glFlush();
     glutSwapBuffers();
