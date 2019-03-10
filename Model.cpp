@@ -60,8 +60,6 @@ void Model::addCube(Point *pos, float width, float height, float depth, float ro
     addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), rotAngle, rotAxis, color);
 }
 
-void Model::translate(float x, float y, float z) {
-    this->x += x;
-    this->y += y;
-    this->z += z;
+void Model::addCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotAxis[3], Color *color) {
+    cylinders.push_back(new Cylinder(pos, base, top, height, rotAngle, rotAxis, color));
 }

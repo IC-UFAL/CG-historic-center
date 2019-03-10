@@ -3,6 +3,7 @@
 
 #include "Face.h"
 #include "Cube.h"
+#include "Cylinder.h"
 
 #ifndef HISTORIC_CENTER_MODEL_H
 #define HISTORIC_CENTER_MODEL_H
@@ -14,6 +15,7 @@ public:
     float x, y, z;
     vector<Face *> faces;
     vector<Cube *> cubes;
+    vector<Cylinder *> cylinders;
     stack<Point *> lastPoints;
 
     Model();
@@ -35,7 +37,7 @@ public:
 
     void translate(float x, float y, float z);
 
-    Model factory();
+    void addCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotAxis[3], Color *color);
 };
 
 #endif //HISTORIC_CENTER_MODEL_H

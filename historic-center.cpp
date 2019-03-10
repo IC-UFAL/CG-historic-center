@@ -21,6 +21,7 @@
 #define COLOR_DOOR new Color(77, 57, 36)
 #define COLOR_STATIC_WINDOW new Color(100, 80, 60)
 #define COLOR_TABLE new Color(100, 57, 36)
+#define COLOR_PILLAR new Color(255, 243, 202)
 
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
 Model building, fancyTable;
@@ -34,7 +35,7 @@ bool keyPressed[256], specialKeyPressed[256];
 void drawDoors();
 
 void init() {
-    static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1};
+    static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
@@ -128,6 +129,22 @@ void init() {
     building.addCube(new Point(10.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
     building.addCube(new Point(13.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
     building.addCube(new Point(16.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(7.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(10.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(13.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(16.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+
+    // External pillars
+    building.addCylinder(new Point(11.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+
+    // Internal pillars
+    building.addCylinder(new Point(11.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
 
     // Handrail flaps
     building.addRectFace(new Point(7.85, 0, 2.5), new Point(7.85, 0, 0.5), new Point(7.85, 2.3, 0.5),
@@ -276,6 +293,15 @@ void drawCube(Point *p, float width, float height, float depth, Point *rotationP
     glPopMatrix();
 }
 
+void drawCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotationAxis[3], Color *color) {
+    glPushMatrix();
+    glTranslatef(GLfloat(pos->x), GLfloat(pos->y), GLfloat(pos->z));
+    glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
+    glRotatef(rotAngle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    gluCylinder(gluNewQuadric(), base, top, height, 50, 50);
+    glPopMatrix();
+}
+
 void drawBuilding() {
     glPushMatrix();
     glTranslatef(building.x, building.y, building.z);
@@ -295,6 +321,11 @@ void drawBuilding() {
                  cube->rotationAxis, cube->color);
     }
 
+    for (auto &cylinder : building.cylinders) {
+        drawCylinder(cylinder->position, cylinder->base, cylinder->top, cylinder->height, cylinder->rotationAngle,
+                     cylinder->rotationAxis, cylinder->color);
+    }
+
     drawDoors();
 
     glPopMatrix();
@@ -309,15 +340,6 @@ void drawDoors() {
     // Right
     orientation[1] = -1;
     drawCube(new Point(13.5, 2, -1.5), 1, 3, 0.1, new Point(-0.5, 1.5, 0.05), door_angle, orientation, doorColor);
-}
-
-void drawCylinder() {
-    glPushMatrix();
-    glTranslatef(25.3f, 1.3f, 1.3f);
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-    gluCylinder(gluNewQuadric(), 0.5f, 0.5f, 1.8f, 32, 32);
-    glPopMatrix();
 }
 
 void drawFancyTable() {
@@ -433,8 +455,6 @@ void renderScene(int) {
 
     drawBuilding();
     drawFancyTable();
-
-    drawCylinder();
 
     glFlush();
     glutSwapBuffers();
