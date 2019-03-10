@@ -11,10 +11,10 @@
 
 #define GLUT_KEY_SHIFT 112
 #define COLOR_FOUNDATION new Color(230, 220, 170)
-#define COLOR_EXTERNAL_WALL new Color(239, 228, 176)
-#define COLOR_EXTERNAL_WALL_2 new Color(249, 238, 186)
+#define COLOR_EXTERNAL_WALL new Color(237, 219, 165)
+#define COLOR_EXTERNAL_WALL_2 new Color(227, 202, 153)
 #define COLOR_EXTERNAL_DETAILS new Color(255, 243, 191)
-#define COLOR_FLOOR new Color(1.0, 1.0, 1.0)
+#define COLOR_FLOOR new Color(208, 156, 98)
 #define COLOR_SECOND_FLOOR new Color(200, 0, 0)
 #define COLOR_STAIRS_FRONT new Color(0.7, 0.7, 0.7)
 #define COLOR_STAIRS_TOP new Color(0.55, 0.55, 0.55)
@@ -25,9 +25,10 @@
 #define COLOR_TABLE_TOP new Color(179, 203, 229)
 #define COLOR_TABLE_GOLD new Color(228, 199, 149)
 #define COLOR_PILLAR new Color(255, 243, 202)
+#define COLOR_PILLAR_BASE new Color(239, 228, 176)
 
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
-Model building, fancyTable;
+Model building;
 
 static unsigned int redisplay_interval = 1000 / 60;
 
@@ -124,28 +125,28 @@ void init() {
 
 
     // Pillars bases
-    building.addCube(new Point(7.5, 0, 2.5), 1, 1, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(16.5, 0, 2.5), 1, 1, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(7.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(10.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(13.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(16.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(7.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(10.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(13.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(16.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(7.5, 0, 2.5), 1, 1, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(16.5, 0, 2.5), 1, 1, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(7.5, 0, -0.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(10.5, 0, -0.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(13.5, 0, -0.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(16.5, 0, -0.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(7.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(10.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(13.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(16.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
 
     // External pillars
-    building.addCylinder(new Point(11.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(14.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(8.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(17.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(11.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0f, axisX, COLOR_PILLAR);
 
     // Internal pillars
-    building.addCylinder(new Point(11.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(14.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(8.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(17.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(11.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
 
     // Handrail flaps
     building.addRectFace(new Point(7.85, 0, 2.5), new Point(7.85, 0, 0.5), new Point(7.85, 2.3, 0.5),
