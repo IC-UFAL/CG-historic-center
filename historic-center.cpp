@@ -21,6 +21,9 @@
 #define COLOR_DOOR new Color(77, 57, 36)
 #define COLOR_STATIC_WINDOW new Color(100, 80, 60)
 #define COLOR_TABLE new Color(100, 57, 36)
+#define COLOR_TABLE_TOP_SIDE new Color(100, 57, 50)
+#define COLOR_TABLE_TOP new Color(179, 203, 229)
+#define COLOR_TABLE_GOLD new Color(228, 199, 149)
 #define COLOR_PILLAR new Color(255, 243, 202)
 
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
@@ -31,8 +34,6 @@ static unsigned int redisplay_interval = 1000 / 60;
 float door_angle = 0.0f;
 
 bool keyPressed[256], specialKeyPressed[256];
-
-void drawDoors();
 
 void init() {
     static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
@@ -249,36 +250,6 @@ void init() {
                            COLOR_EXTERNAL_DETAILS);
 
     building.translate(10, 5, 0);
-
-    // Fancy Table
-    fancyTable.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0), new Point(0.1, 0.15, 0),
-                           new Point(0.07, 0, 0.03), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0.1, 0.15, 0.1), new Point(0.07, 0, 0.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0, 0.15, 0.1), new Point(0.03, 0, 0.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0, 0.15, 0), new Point(0.03, 0, 0.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE);
-
-    fancyTable.addRectFace(new Point(0.93, 0, 0.03), new Point(0.9, 0.15, 0), new Point(1, 0.15, 0),
-                           new Point(0.97, 0, 0.03), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(1, 0.15, 0.1), new Point(0.97, 0, 0.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0.9, 0.15, 0.1), new Point(0.93, 0, 0.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0.9, 0.15, 0), new Point(0.93, 0, 0.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0.9, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE);
-
-    fancyTable.addRectFace(new Point(0.03, 0, 2.03), new Point(0, 0.15, 2), new Point(0.1, 0.15, 2),
-                           new Point(0.07, 0, 2.03), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0.1, 0.15, 2.1), new Point(0.07, 0, 2.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0, 0.15, 2.1), new Point(0.03, 0, 2.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0, 0.15, 2), new Point(0.03, 0, 2.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0, 0.15, 2), 0.1, 0.75, 0.1, COLOR_TABLE);
-
-    fancyTable.addRectFace(new Point(0.93, 0, 2.03), new Point(0.9, 0.15, 2), new Point(1, 0.15, 2),
-                           new Point(0.97, 0, 2.03), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(1, 0.15, 2.1), new Point(0.97, 0, 2.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0.9, 0.15, 2.1), new Point(0.93, 0, 2.07), COLOR_TABLE);
-    fancyTable.addRectFace(new Point(0.9, 0.15, 2), new Point(0.93, 0, 2.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0.9, 0.15, 2), 0.1, 0.75, 0.1, COLOR_TABLE);
-
 }
 
 void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
@@ -302,11 +273,8 @@ void drawCylinder(Point *pos, float base, float top, float height, float rotAngl
     glPopMatrix();
 }
 
-void drawBuilding() {
-    glPushMatrix();
-    glTranslatef(building.x, building.y, building.z);
-
-    for (auto &face : building.faces) {
+void drawModel(Model model) {
+    for (auto &face : model.faces) {
         glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
         glBegin(GL_POLYGON);
         for (auto &point : face->points) {
@@ -315,20 +283,16 @@ void drawBuilding() {
         glEnd();
     }
 
-    for (auto &cube : building.cubes) {
+    for (auto &cube : model.cubes) {
         glColor3f(GLfloat(cube->color->R), GLfloat(cube->color->G), GLfloat(cube->color->B));
         drawCube(cube->position, cube->width, cube->height, cube->depth, cube->rotationPoint, cube->rotationAngle,
                  cube->rotationAxis, cube->color);
     }
 
-    for (auto &cylinder : building.cylinders) {
+    for (auto &cylinder : model.cylinders) {
         drawCylinder(cylinder->position, cylinder->base, cylinder->top, cylinder->height, cylinder->rotationAngle,
                      cylinder->rotationAxis, cylinder->color);
     }
-
-    drawDoors();
-
-    glPopMatrix();
 }
 
 void drawDoors() {
@@ -342,21 +306,86 @@ void drawDoors() {
     drawCube(new Point(13.5, 2, -1.5), 1, 3, 0.1, new Point(-0.5, 1.5, 0.05), door_angle, orientation, doorColor);
 }
 
-void drawFancyTable() {
-    for (auto &face : fancyTable.faces) {
-        glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
-        glBegin(GL_POLYGON);
-        for (auto &point : face->points) {
-            glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
-        }
-        glEnd();
-    }
+void drawFancyTable(float x, float y, float z) {
+    Model fancyTable;
 
-    for (auto &cube : fancyTable.cubes) {
-        glColor3f(GLfloat(cube->color->R), GLfloat(cube->color->G), GLfloat(cube->color->B));
-        drawCube(cube->position, cube->width, cube->height, cube->depth, cube->rotationPoint, cube->rotationAngle,
-                 cube->rotationAxis, cube->color);
-    }
+    // Back Left Leg
+    fancyTable.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0),
+                           new Point(0.1, 0.15, 0), new Point(0.07, 0, 0.03), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0.1, 0.15, 0.1), new Point(0.07, 0, 0.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0, 0.15, 0.1), new Point(0.03, 0, 0.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0, 0.15, 0), new Point(0.03, 0, 0.03), COLOR_TABLE);
+    fancyTable.addCube(new Point(0, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE);
+
+    // Back Right Leg
+    fancyTable.addRectFace(new Point(0.93, 0, 0.03), new Point(0.9, 0.15, 0),
+                           new Point(1, 0.15, 0), new Point(0.97, 0, 0.03), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(1, 0.15, 0.1), new Point(0.97, 0, 0.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0.9, 0.15, 0.1), new Point(0.93, 0, 0.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0.9, 0.15, 0), new Point(0.93, 0, 0.03), COLOR_TABLE);
+    fancyTable.addCube(new Point(0.9, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE);
+
+    // Front Left Leg
+    fancyTable.addRectFace(new Point(0.03, 0, 2.03), new Point(0, 0.15, 2),
+                           new Point(0.1, 0.15, 2), new Point(0.07, 0, 2.03), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0.1, 0.15, 2.1), new Point(0.07, 0, 2.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0, 0.15, 2.1), new Point(0.03, 0, 2.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0, 0.15, 2), new Point(0.03, 0, 2.03), COLOR_TABLE);
+    fancyTable.addCube(new Point(0, 0.15, 2), 0.1, 0.75, 0.1, COLOR_TABLE);
+
+    // Front Right Leg
+    fancyTable.addRectFace(new Point(0.93, 0, 2.03), new Point(0.9, 0.15, 2),
+                           new Point(1, 0.15, 2), new Point(0.97, 0, 2.03), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(1, 0.15, 2.1), new Point(0.97, 0, 2.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0.9, 0.15, 2.1), new Point(0.93, 0, 2.07), COLOR_TABLE);
+    fancyTable.addRectFace(new Point(0.9, 0.15, 2), new Point(0.93, 0, 2.03), COLOR_TABLE);
+    fancyTable.addCube(new Point(0.9, 0.15, 2), 0.1, 0.75, 0.1, COLOR_TABLE);
+
+    // Golden decorations
+    // Back left
+    fancyTable.addRectFace(new Point(0.2, 0.7, -0.01), new Point(0.35, 0.9, -0.01),
+                           new Point(-0.01, 0.9, -0.01), new Point(-0.01, 0.7, -0.01),
+                           COLOR_TABLE_GOLD);
+    fancyTable.addRectFace(new Point(-0.01, 0.9, 0.35), new Point(-0.01, 0.7, 0.2),
+                           COLOR_TABLE_GOLD);
+    // Back right
+    fancyTable.addRectFace(new Point(0.8, 0.7, -0.01), new Point(0.65, 0.9, -0.01),
+                           new Point(1.01, 0.9, -0.01), new Point(1.01, 0.7, -0.01),
+                           COLOR_TABLE_GOLD);
+    fancyTable.addRectFace(new Point(1.01, 0.9, 0.35), new Point(1.01, 0.7, 0.2),
+                           COLOR_TABLE_GOLD);
+    // Front left
+    fancyTable.addRectFace(new Point(0.2, 0.7, 2.11), new Point(0.35, 0.9, 2.11),
+                           new Point(-0.01, 0.9, 2.11), new Point(-0.01, 0.7, 2.11),
+                           COLOR_TABLE_GOLD);
+    fancyTable.addRectFace(new Point(-0.01, 0.9, 1.75), new Point(-0.01, 0.7, 1.9),
+                           COLOR_TABLE_GOLD);
+    // Front right
+    fancyTable.addRectFace(new Point(0.8, 0.7, 2.11), new Point(0.65, 0.9, 2.11),
+                           new Point(1.01, 0.9, 2.11), new Point(1.01, 0.7, 2.11),
+                           COLOR_TABLE_GOLD);
+    fancyTable.addRectFace(new Point(1.01, 0.9, 1.75), new Point(1.01, 0.7, 1.9),
+                           COLOR_TABLE_GOLD);
+
+    // Top
+    fancyTable.addCube(new Point(-0.1, 0.9, -0.1), 1.2, 0.1, 2.3, COLOR_TABLE_TOP_SIDE);
+    fancyTable.addCube(new Point(-0.05, 0.91, -0.05), 1.1, 0.1, 2.2, COLOR_TABLE_TOP);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    drawModel(fancyTable);
+    glPopMatrix();
+}
+
+void drawBuilding() {
+    glPushMatrix();
+    glTranslatef(building.x, building.y, building.z);
+
+    drawModel(building);
+    drawDoors();
+    drawFancyTable(22, 6, -6);
+
+    glPopMatrix();
 }
 
 void changeSize(int w, int h) {
@@ -454,7 +483,6 @@ void renderScene(int) {
     glEnd();
 
     drawBuilding();
-    drawFancyTable();
 
     glFlush();
     glutSwapBuffers();
