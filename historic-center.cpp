@@ -128,6 +128,10 @@ void init() {
     building.addCube(new Point(10.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
     building.addCube(new Point(13.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
     building.addCube(new Point(16.5, 0, -0.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(7.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(10.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(13.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(16.5, 0.3, -5.5), 1, 2.5, 1, COLOR_EXTERNAL_WALL);
 
     // Handrail flaps
     building.addRectFace(new Point(7.85, 0, 2.5), new Point(7.85, 0, 0.5), new Point(7.85, 2.3, 0.5),
@@ -232,10 +236,16 @@ void init() {
                            COLOR_EXTERNAL_DETAILS);
 
     // External pillars
-    building.addCylinder(new Point(11.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(14.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(8.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(17.0, 2.0, 0.0), 0.5, 0.5, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(11.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0, axisX, COLOR_PILLAR);
+
+    // Internal pillars
+    building.addCylinder(new Point(11.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0, axisX, COLOR_PILLAR);
 
 }
 
