@@ -11,9 +11,12 @@ using namespace std;
 
 class Model {
 public:
+    float x, y, z;
     vector<Face *> faces;
     vector<Cube *> cubes;
     stack<Point *> lastPoints;
+
+    Model();
 
     void addRectFace(Point *p1, Point *p2, Point *p3, Point *p4, Color *color);
 
@@ -29,6 +32,10 @@ public:
     void addCube(Point *pos, float width, float height, float depth, float rotAngle, int rotAxis[3], Color *color);
 
     void addCube(Point *pos, float width, float height, float depth, Color *color);
+
+    void translate(float x, float y, float z);
+
+    Model factory();
 };
 
 #endif //HISTORIC_CENTER_MODEL_H

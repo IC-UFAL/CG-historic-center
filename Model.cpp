@@ -6,6 +6,10 @@
 
 using namespace std;
 
+Model::Model() {
+    this->x = this->y = this->z = 0;
+}
+
 void Model::addRectFace(Point *p1, Point *p2, Point *p3, Point *p4, Color *color) {
     while (!lastPoints.empty())
         lastPoints.pop();
@@ -54,4 +58,10 @@ void Model::addCube(Point *pos, float width, float height, float depth, Color *c
 
 void Model::addCube(Point *pos, float width, float height, float depth, float rotAngle, int *rotAxis, Color *color) {
     addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), rotAngle, rotAxis, color);
+}
+
+void Model::translate(float x, float y, float z) {
+    this->x += x;
+    this->y += y;
+    this->z += z;
 }
