@@ -23,9 +23,13 @@
 #define COLOR_TABLE new Color(100, 57, 36)
 #define COLOR_TABLE_TOP_SIDE new Color(100, 57, 50)
 #define COLOR_TABLE_TOP new Color(179, 203, 229)
-#define COLOR_TABLE_GOLD new Color(228, 199, 149)
+#define COLOR_TABLE_GOLD new Color(228, 220, 120)
 #define COLOR_PILLAR new Color(255, 243, 202)
 #define COLOR_PILLAR_BASE new Color(239, 228, 176)
+#define COLOR_COUCH_WOOD new Color(82, 46, 30)
+#define COLOR_COUCH_FOOT new Color(63, 35, 22)
+#define COLOR_COUCH_PAD new Color(190, 203, 240)
+#define COLOR_COUCH_PAD_SEAT new Color(174, 190, 236)
 
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
 Model building;
@@ -137,6 +141,12 @@ void init() {
     building.addCube(new Point(13.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
     building.addCube(new Point(16.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE);
 
+    // Pillars top
+    building.addCube(new Point(7.5, 9.5, -0.5), 1, 0.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(10.5, 9.5, -0.5), 1, 0.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(13.5, 9.5, -0.5), 1, 0.5, 1, COLOR_PILLAR_BASE);
+    building.addCube(new Point(16.5, 9.5, -0.5), 1, 0.5, 1, COLOR_PILLAR_BASE);
+
     // External pillars
     building.addCylinder(new Point(11.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0f, axisX, COLOR_PILLAR);
     building.addCylinder(new Point(14.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0f, axisX, COLOR_PILLAR);
@@ -238,9 +248,9 @@ void init() {
     building.addCube(new Point(-0.05, 6.5, -6.95), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
 
     // Ceiling facade
-    building.addRectFace(new Point(8, 10, 0), new Point(8, 11, 0), new Point(17, 11, 0), new Point(17, 10, 0),
-                         COLOR_EXTERNAL_DETAILS);
-    building.addRectFace(new Point(17, 11, -1.5), new Point(17, 10, -1.5), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(8, 10, 0.75), new Point(8, 11, 0.75), new Point(17, 11, 0.75),
+                         new Point(17, 10, 0.75), COLOR_PILLAR_BASE);
+    building.addRectFace(new Point(17, 11, -1.5), new Point(17, 10, -1.5), COLOR_PILLAR_BASE);
     building.addRectFace(new Point(19.5, 11, -1.5), new Point(20, 10, -1.5), COLOR_EXTERNAL_DETAILS);
     building.addRectFace(new Point(19.5, 11, 0.5), new Point(20, 10, 0), COLOR_EXTERNAL_DETAILS);
     building.addRectFace(new Point(25.5, 11, 0.5), new Point(25, 10, 0), COLOR_EXTERNAL_DETAILS);
@@ -250,16 +260,16 @@ void init() {
     building.addRectFace(new Point(5.5, 11, 0.5), new Point(5, 10, 0), COLOR_EXTERNAL_DETAILS);
     building.addRectFace(new Point(5.5, 11, -1.5), new Point(5, 10, -1.5), COLOR_EXTERNAL_DETAILS);
     building.addRectFace(new Point(8, 11, -1.5), new Point(8, 10, -1.5), COLOR_EXTERNAL_DETAILS);
-    building.addRectFace(new Point(8, 11, 0), new Point(8, 10, 0), COLOR_EXTERNAL_DETAILS);
-    building.addRectFace(new Point(8, 10, 0), new Point(8, 10, -1.5), new Point(17, 10, -1.5),
-                         new Point(17, 10, 0), COLOR_EXTERNAL_DETAILS);
+    building.addRectFace(new Point(8, 11, 0.75), new Point(8, 10, 0.75), COLOR_PILLAR_BASE);
+    building.addRectFace(new Point(8, 10, 0.75), new Point(8, 10, -1.5), new Point(17, 10, -1.5),
+                         new Point(17, 10, 0.75), COLOR_EXTERNAL_DETAILS);
 
     // Ceiling
-    building.addCube(new Point(7.5, 11, -1.5), 10, 0.15, 2, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(7.5, 11, -1.5), float(5 / 0.85), 0.15, 2, 30, axisZ, COLOR_EXTERNAL_WALL);
-    building.addCube(new Point(17.5, 11, -1.5), float(5 / 0.85), 0.15, 2, new Point(-float(5 / 0.85) / 2, 0.075, 1),
+    building.addCube(new Point(7.5, 11, -1.5), 10, 0.15, 3, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(7.5, 11, -1.5), float(5 / 0.85), 0.15, 3, 30, axisZ, COLOR_EXTERNAL_WALL);
+    building.addCube(new Point(17.5, 11, -1.5), float(5 / 0.85), 0.15, 3, new Point(-float(5 / 0.85) / 2, 0.075, 1.5),
                      -30, axisZ, COLOR_EXTERNAL_WALL);
-    building.addTriangFace(new Point(7.5, 11, 0), new Point(12.5, 11 + 5 * 0.57735026919, 0), new Point(17.5, 11, 0),
+    building.addTriangFace(new Point(7.5, 11, 1), new Point(12.5, 11 + 5 * 0.57735026919, 1), new Point(17.5, 11, 1),
                            COLOR_EXTERNAL_DETAILS);
 
     building.translate(10, 5, 0);
@@ -328,7 +338,7 @@ void drawFancyTable(float x, float y, float z) {
     fancyTable.addRectFace(new Point(0.1, 0.15, 0.1), new Point(0.07, 0, 0.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0, 0.15, 0.1), new Point(0.03, 0, 0.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0, 0.15, 0), new Point(0.03, 0, 0.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE);
+    fancyTable.addCube(new Point(0, 0.15, 0), 0.1, 0.65, 0.1, COLOR_TABLE);
 
     // Back Right Leg
     fancyTable.addRectFace(new Point(0.93, 0, 0.03), new Point(0.9, 0.15, 0),
@@ -336,7 +346,7 @@ void drawFancyTable(float x, float y, float z) {
     fancyTable.addRectFace(new Point(1, 0.15, 0.1), new Point(0.97, 0, 0.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0.9, 0.15, 0.1), new Point(0.93, 0, 0.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0.9, 0.15, 0), new Point(0.93, 0, 0.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0.9, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE);
+    fancyTable.addCube(new Point(0.9, 0.15, 0), 0.1, 0.65, 0.1, COLOR_TABLE);
 
     // Front Left Leg
     fancyTable.addRectFace(new Point(0.03, 0, 2.03), new Point(0, 0.15, 2),
@@ -344,7 +354,7 @@ void drawFancyTable(float x, float y, float z) {
     fancyTable.addRectFace(new Point(0.1, 0.15, 2.1), new Point(0.07, 0, 2.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0, 0.15, 2.1), new Point(0.03, 0, 2.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0, 0.15, 2), new Point(0.03, 0, 2.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0, 0.15, 2), 0.1, 0.75, 0.1, COLOR_TABLE);
+    fancyTable.addCube(new Point(0, 0.15, 2), 0.1, 0.65, 0.1, COLOR_TABLE);
 
     // Front Right Leg
     fancyTable.addRectFace(new Point(0.93, 0, 2.03), new Point(0.9, 0.15, 2),
@@ -352,37 +362,37 @@ void drawFancyTable(float x, float y, float z) {
     fancyTable.addRectFace(new Point(1, 0.15, 2.1), new Point(0.97, 0, 2.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0.9, 0.15, 2.1), new Point(0.93, 0, 2.07), COLOR_TABLE);
     fancyTable.addRectFace(new Point(0.9, 0.15, 2), new Point(0.93, 0, 2.03), COLOR_TABLE);
-    fancyTable.addCube(new Point(0.9, 0.15, 2), 0.1, 0.75, 0.1, COLOR_TABLE);
+    fancyTable.addCube(new Point(0.9, 0.15, 2), 0.1, 0.65, 0.1, COLOR_TABLE);
 
     // Golden decorations
     // Back left
-    fancyTable.addRectFace(new Point(0.2, 0.7, -0.01), new Point(0.35, 0.9, -0.01),
-                           new Point(-0.01, 0.9, -0.01), new Point(-0.01, 0.7, -0.01),
+    fancyTable.addRectFace(new Point(0.2, 0.6, -0.01), new Point(0.35, 0.8, -0.01),
+                           new Point(-0.01, 0.8, -0.01), new Point(-0.01, 0.6, -0.01),
                            COLOR_TABLE_GOLD);
-    fancyTable.addRectFace(new Point(-0.01, 0.9, 0.35), new Point(-0.01, 0.7, 0.2),
+    fancyTable.addRectFace(new Point(-0.01, 0.8, 0.35), new Point(-0.01, 0.6, 0.2),
                            COLOR_TABLE_GOLD);
     // Back right
-    fancyTable.addRectFace(new Point(0.8, 0.7, -0.01), new Point(0.65, 0.9, -0.01),
-                           new Point(1.01, 0.9, -0.01), new Point(1.01, 0.7, -0.01),
+    fancyTable.addRectFace(new Point(0.8, 0.6, -0.01), new Point(0.65, 0.8, -0.01),
+                           new Point(1.01, 0.8, -0.01), new Point(1.01, 0.6, -0.01),
                            COLOR_TABLE_GOLD);
-    fancyTable.addRectFace(new Point(1.01, 0.9, 0.35), new Point(1.01, 0.7, 0.2),
+    fancyTable.addRectFace(new Point(1.01, 0.8, 0.35), new Point(1.01, 0.6, 0.2),
                            COLOR_TABLE_GOLD);
     // Front left
-    fancyTable.addRectFace(new Point(0.2, 0.7, 2.11), new Point(0.35, 0.9, 2.11),
-                           new Point(-0.01, 0.9, 2.11), new Point(-0.01, 0.7, 2.11),
+    fancyTable.addRectFace(new Point(0.2, 0.6, 2.11), new Point(0.35, 0.8, 2.11),
+                           new Point(-0.01, 0.8, 2.11), new Point(-0.01, 0.6, 2.11),
                            COLOR_TABLE_GOLD);
-    fancyTable.addRectFace(new Point(-0.01, 0.9, 1.75), new Point(-0.01, 0.7, 1.9),
+    fancyTable.addRectFace(new Point(-0.01, 0.8, 1.75), new Point(-0.01, 0.6, 1.9),
                            COLOR_TABLE_GOLD);
     // Front right
-    fancyTable.addRectFace(new Point(0.8, 0.7, 2.11), new Point(0.65, 0.9, 2.11),
-                           new Point(1.01, 0.9, 2.11), new Point(1.01, 0.7, 2.11),
+    fancyTable.addRectFace(new Point(0.8, 0.6, 2.11), new Point(0.65, 0.8, 2.11),
+                           new Point(1.01, 0.8, 2.11), new Point(1.01, 0.6, 2.11),
                            COLOR_TABLE_GOLD);
-    fancyTable.addRectFace(new Point(1.01, 0.9, 1.75), new Point(1.01, 0.7, 1.9),
+    fancyTable.addRectFace(new Point(1.01, 0.8, 1.75), new Point(1.01, 0.6, 1.9),
                            COLOR_TABLE_GOLD);
 
     // Top
-    fancyTable.addCube(new Point(-0.1, 0.9, -0.1), 1.2, 0.1, 2.3, COLOR_TABLE_TOP_SIDE);
-    fancyTable.addCube(new Point(-0.05, 0.91, -0.05), 1.1, 0.1, 2.2, COLOR_TABLE_TOP);
+    fancyTable.addCube(new Point(-0.1, 0.8, -0.1), 1.2, 0.1, 2.3, COLOR_TABLE_TOP_SIDE);
+    fancyTable.addCube(new Point(-0.05, 0.81, -0.05), 1.1, 0.1, 2.2, COLOR_TABLE_TOP);
 
     glPushMatrix();
     glTranslatef(x, y, z);
@@ -491,8 +501,10 @@ void drawBuilding() {
 
     drawModel(building);
     drawDoors();
-    drawFancyTable(22, 6, -6);
+    drawFancyTable(22.5, 6, -6);
+    drawFancyCouch(20.1, 6, -7.5, axisY, 90);
     drawBigTable(16, 6, -2.5);
+
     // simple chairs
     drawChair(16.5, 6, -7);
     drawChair(15.8, 6, -7);
