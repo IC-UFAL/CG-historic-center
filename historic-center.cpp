@@ -390,6 +390,46 @@ void drawFancyTable(float x, float y, float z) {
     glPopMatrix();
 }
 
+void drawBigTable(float x, float y, float z) {
+    Model bigTable;
+
+    // top
+    bigTable.addRectFace(new Point(0, 0.1, 0), new Point(0, 0.1, -1.7), new Point(0, 1.3, -1.7),
+                         new Point(0, 1.3, 0), COLOR_TABLE);
+    bigTable.addRectFace(new Point(-2.6, 1.3, -1.7), new Point(-2.6, 1.3, 0), COLOR_DOOR);
+    bigTable.addRectFace(new Point(-2.6, 1.6, -1.7), new Point(-2.6, 1.6, 0), COLOR_DOOR);
+    bigTable.addRectFace(new Point(-4.3, 1.6, -1.7), new Point(-4.3, 1.6, 0), COLOR_DOOR);
+    bigTable.addRectFace(new Point(-4.3, 1.3, -1.7), new Point(-4.3, 1.3, 0), COLOR_DOOR);
+    bigTable.addRectFace(new Point(-6.9, 1.3, -1.7), new Point(-6.9, 1.3, 0), COLOR_DOOR);
+    bigTable.addRectFace(new Point(-6.9, 0.1, -1.7), new Point(-6.9, 0.1, 0), COLOR_TABLE);
+
+    // front
+    bigTable.addRectFace(new Point(0, 0.1, -1.7), new Point(0, 1.3, -1.7), new Point(-6.9, 1.3, -1.7),
+                         new Point(-6.9, 0.1, -1.7), COLOR_TABLE);
+    bigTable.addRectFace(new Point(-2.6, 1.3, -1.7), new Point(-4.3, 1.3, -1.7), new Point(-4.3, 1.6, -1.7),
+                         new Point(-2.6, 1.6, -1.7), COLOR_TABLE);
+
+    // detail top
+    bigTable.addTriangFace(new Point(-2.6, 1.6, -1.7), new Point(-4.3, 1.6, -1.7), new Point(-3.45, 1.8, -1.7), COLOR_TABLE);
+    bigTable.addTriangFace(new Point(-2.6, 1.6, -1.6), new Point(-4.3, 1.6, -1.6), new Point(-3.45, 1.8, -1.6), COLOR_TABLE);
+    bigTable.addRectFace(new Point(-4.3, 1.6, -1.7), new Point(-4.3, 1.6, -1.6), new Point(-3.45, 1.8, -1.6),
+                         new Point(-3.45, 1.8, -1.7), COLOR_TABLE);
+    bigTable.addRectFace(new Point(-2.6, 1.6, -1.6), new Point(-2.6, 1.6, -1.7), COLOR_TABLE);
+
+    // legs
+    bigTable.addCylinder(new Point(-0.1, 0, -0.1), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
+    bigTable.addCylinder(new Point(-0.1, 0, -1.6), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
+    bigTable.addCylinder(new Point(-6.8, 0, -1.6), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
+    bigTable.addCylinder(new Point(-6.8, 0, -0.1), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    drawModel(bigTable);
+    glPopMatrix();
+}
+
+
+
 void drawBuilding() {
     glPushMatrix();
     glTranslatef(building.x, building.y, building.z);
@@ -397,6 +437,8 @@ void drawBuilding() {
     drawModel(building);
     drawDoors();
     drawFancyTable(22, 6, -6);
+    drawBigTable(16, 6, -2.5);
+    
 
     glPopMatrix();
 }
