@@ -32,7 +32,7 @@
 #define COLOR_COUCH_PAD_SEAT new Color(174, 190, 236)
 #define COLOR_CHAIR_WOOD new Color(100, 0, 0)
 
-Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
+Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.1, 0.03);
 Model building;
 
 static unsigned int redisplay_interval = 1000 / 60;
@@ -795,6 +795,12 @@ void keyboardHandler(unsigned char key, int x, int y) {
 
 void keyboardUpHandler(unsigned char key, int x, int y) {
     keyPressed[key] = false;
+    if (key == 'q' && cam->speed > 0.03) {
+        cam->speed -= 0.01;
+    }
+    if (key == 'e' && cam->speed < 0.2) {
+        cam->speed += 0.01;
+    }
 }
 
 void specialFuncHandler(int key, int x, int y) {
