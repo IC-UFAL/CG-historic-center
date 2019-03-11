@@ -36,8 +36,9 @@ float door_angle = 0.0f;
 
 bool keyPressed[256], specialKeyPressed[256];
 
+static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
+
 void init() {
-    static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
@@ -189,6 +190,11 @@ void init() {
     building.addRectFace(new Point(13.5, 2, -1.5), new Point(13.5, 10, -1.5), new Point(20, 10, -1.5),
                          new Point(20, 2, -1.5), COLOR_EXTERNAL_WALL);
 
+    // Internal second floor wall
+    building.addRectFace(new Point(20, 6.2, 0), new Point(20, 6.2, -10), new Point(20, 10, -10),
+                         new Point(20, 10, 0),
+                         COLOR_EXTERNAL_WALL_2);
+
     // Static front windows
     building.addCube(new Point(1.75, 2.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);
     building.addCube(new Point(21.75, 2.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);
@@ -206,6 +212,12 @@ void init() {
     // Static front doors
     building.addCube(new Point(8.7, 2, -1.55), 1.6, 3, 0.1, COLOR_DOOR);
     building.addCube(new Point(14.7, 2, -1.55), 1.6, 3, 0.1, COLOR_DOOR);
+
+    // Static second floor doors
+    building.addCube(new Point(20.0, 6.2, -2), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
+    building.addCube(new Point(20.0, 6.2, -5), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
+    building.addCube(new Point(19.9, 6.2, -2), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
+    building.addCube(new Point(19.9, 6.2, -5), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
 
     // Static right windows
     building.addCube(new Point(24.95, 2.5, -1.55), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
