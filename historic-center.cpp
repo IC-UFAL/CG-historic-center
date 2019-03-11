@@ -30,6 +30,7 @@
 #define COLOR_COUCH_FOOT new Color(63, 35, 22)
 #define COLOR_COUCH_PAD new Color(190, 203, 240)
 #define COLOR_COUCH_PAD_SEAT new Color(174, 190, 236)
+#define COLOR_CHAIR_WOOD new Color(100, 0, 0)
 
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.2, 0.03);
 Model building;
@@ -201,7 +202,7 @@ void init() {
                          new Point(20, 2, -1.5), COLOR_EXTERNAL_WALL);
 
     // Internal second floor wall
-    building.addRectFace(new Point(20, 6.2, 0), new Point(20, 6.2, -10), new Point(20, 10, -10),
+    building.addRectFace(new Point(20, 6.0, 0), new Point(20, 6.0, -10), new Point(20, 10, -10),
                          new Point(20, 10, 0),
                          COLOR_EXTERNAL_WALL_2);
 
@@ -224,10 +225,8 @@ void init() {
     building.addCube(new Point(14.7, 2, -1.55), 1.6, 3, 0.1, COLOR_DOOR);
 
     // Static second floor doors
-    building.addCube(new Point(20.0, 6.2, -2), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
-    building.addCube(new Point(20.0, 6.2, -5), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
-    building.addCube(new Point(19.9, 6.2, -2), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
-    building.addCube(new Point(19.9, 6.2, -5), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
+    building.addCube(new Point(19.95, 6.01, -2), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
+    building.addCube(new Point(19.95, 6.01, -5), 1.6, 3, 0.1, 90, axisY, COLOR_DOOR);
 
     // Static right windows
     building.addCube(new Point(24.95, 2.5, -1.55), 1.5, 2.5, 0.1, 90, axisY, COLOR_STATIC_WINDOW);
@@ -403,6 +402,9 @@ void drawFancyTable(float x, float y, float z) {
 void drawBigTable(float x, float y, float z) {
     Model bigTable;
 
+    // platform
+    bigTable.addCube(new Point(-4.6, 0.01, -0.2), 2.4, 0.3, 1, COLOR_DOOR);
+
     // top
     bigTable.addRectFace(new Point(0, 0.1, 0), new Point(0, 0.1, -1.7), new Point(0, 1.3, -1.7),
                          new Point(0, 1.3, 0), COLOR_TABLE);
@@ -420,8 +422,10 @@ void drawBigTable(float x, float y, float z) {
                          new Point(-2.6, 1.6, -1.7), COLOR_TABLE);
 
     // detail top
-    bigTable.addTriangFace(new Point(-2.6, 1.6, -1.7), new Point(-4.3, 1.6, -1.7), new Point(-3.45, 1.8, -1.7), COLOR_TABLE);
-    bigTable.addTriangFace(new Point(-2.6, 1.6, -1.6), new Point(-4.3, 1.6, -1.6), new Point(-3.45, 1.8, -1.6), COLOR_TABLE);
+    bigTable.addTriangFace(new Point(-2.6, 1.6, -1.7), new Point(-4.3, 1.6, -1.7), new Point(-3.45, 1.8, -1.7),
+                           COLOR_TABLE);
+    bigTable.addTriangFace(new Point(-2.6, 1.6, -1.6), new Point(-4.3, 1.6, -1.6), new Point(-3.45, 1.8, -1.6),
+                           COLOR_TABLE);
     bigTable.addRectFace(new Point(-4.3, 1.6, -1.7), new Point(-4.3, 1.6, -1.6), new Point(-3.45, 1.8, -1.6),
                          new Point(-3.45, 1.8, -1.7), COLOR_TABLE);
     bigTable.addRectFace(new Point(-2.6, 1.6, -1.6), new Point(-2.6, 1.6, -1.7), COLOR_TABLE);
@@ -443,7 +447,7 @@ void drawChair(float x, float y, float z) {
 
     // Back Left Leg
     chair.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0),
-                           new Point(0.1, 0.15, 0), new Point(0.07, 0, 0.03), COLOR_TABLE);
+                      new Point(0.1, 0.15, 0), new Point(0.07, 0, 0.03), COLOR_TABLE);
     chair.addRectFace(new Point(0.1, 0.15, 0.1), new Point(0.07, 0, 0.07), COLOR_TABLE);
     chair.addRectFace(new Point(0, 0.15, 0.1), new Point(0.03, 0, 0.07), COLOR_TABLE);
     chair.addRectFace(new Point(0, 0.15, 0), new Point(0.03, 0, 0.03), COLOR_TABLE);
@@ -451,7 +455,7 @@ void drawChair(float x, float y, float z) {
 
     // Back Right Leg
     chair.addRectFace(new Point(0.53, 0, 0.03), new Point(0.5, 0.15, 0),
-                           new Point(0.6, 0.15, 0), new Point(0.57, 0, 0.03), COLOR_TABLE);
+                      new Point(0.6, 0.15, 0), new Point(0.57, 0, 0.03), COLOR_TABLE);
     chair.addRectFace(new Point(0.6, 0.15, 0.1), new Point(0.57, 0, 0.07), COLOR_TABLE);
     chair.addRectFace(new Point(0.5, 0.15, 0.1), new Point(0.53, 0, 0.07), COLOR_TABLE);
     chair.addRectFace(new Point(0.5, 0.15, 0), new Point(0.53, 0, 0.03), COLOR_TABLE);
@@ -459,7 +463,7 @@ void drawChair(float x, float y, float z) {
 
     // Front Left Leg
     chair.addRectFace(new Point(0.03, 0, 0.83), new Point(0, 0.15, 0.8),
-                           new Point(0.1, 0.15, 0.8), new Point(0.07, 0, 0.83), COLOR_TABLE);
+                      new Point(0.1, 0.15, 0.8), new Point(0.07, 0, 0.83), COLOR_TABLE);
     chair.addRectFace(new Point(0.1, 0.15, 0.9), new Point(0.07, 0, 0.87), COLOR_TABLE);
     chair.addRectFace(new Point(0, 0.15, 0.9), new Point(0.03, 0, 0.87), COLOR_TABLE);
     chair.addRectFace(new Point(0, 0.15, 0.8), new Point(0.03, 0, 0.83), COLOR_TABLE);
@@ -467,7 +471,7 @@ void drawChair(float x, float y, float z) {
 
     // Front Right Leg
     chair.addRectFace(new Point(0.53, 0, 0.83), new Point(0.5, 0.15, 0.8),
-                           new Point(0.6, 0.15, 0.8), new Point(0.57, 0, 0.83), COLOR_TABLE);
+                      new Point(0.6, 0.15, 0.8), new Point(0.57, 0, 0.83), COLOR_TABLE);
     chair.addRectFace(new Point(0.6, 0.15, 0.9), new Point(0.57, 0, 0.87), COLOR_TABLE);
     chair.addRectFace(new Point(0.5, 0.15, 0.9), new Point(0.53, 0, 0.87), COLOR_TABLE);
     chair.addRectFace(new Point(0.5, 0.15, 0.8), new Point(0.53, 0, 0.83), COLOR_TABLE);
@@ -491,11 +495,13 @@ void drawChair(float x, float y, float z) {
 
     glPushMatrix();
     glTranslatef(x, y, z);
+    glScalef(0.8, 0.8, 0.8);
     drawModel(chair);
     glPopMatrix();
 }
 
-void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3]) {
+void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3], float scaleX, float scaleY, float scaleZ,
+                    Color *color) {
     Model chair;
 
     // Back Left Leg
@@ -535,7 +541,7 @@ void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3]) {
 
     // Fancy seat
     chair.addRectFace(new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85),
-                      new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15), COLOR_COUCH_PAD);
+                      new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15), color);
 
     // Backrest
     chair.addCube(new Point(-0.1, 0.8, 0), 0.8, 1.2, 0.075, COLOR_TABLE_TOP_SIDE);
@@ -544,12 +550,12 @@ void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3]) {
     chair.addTriangFace(new Point(-0.1, 2, 0), new Point(0.7, 2, 0), new Point(0.3, 2.2, 0), COLOR_TABLE);
     chair.addTriangFace(new Point(-0.1, 2, 0.075), new Point(0.7, 2, 0.075), new Point(0.3, 2.2, 0.075), COLOR_TABLE);
     chair.addRectFace(new Point(-0.1, 2, 0), new Point(-0.1, 2, 0.075), new Point(0.3, 2.2, 0.075),
-                         new Point(0.3, 2.2, 0), COLOR_TABLE);
+                      new Point(0.3, 2.2, 0), COLOR_TABLE);
     chair.addRectFace(new Point(0.7, 2.0, 0.075), new Point(0.7, 2.0, 0), COLOR_TABLE);
 
     // Fancy Backrest
     chair.addRectFace(new Point(0, 1, 0.08), new Point(0.6, 1, 0.08),
-                      new Point(0.6, 1.9, 0.08), new Point(0.0, 1.9, 0.08), COLOR_COUCH_PAD);
+                      new Point(0.6, 1.9, 0.08), new Point(0.0, 1.9, 0.08), color);
 
     // Arms
     chair.addCube(new Point(-0.1, 1.15, 0), 0.05, 0.05, 0.9, COLOR_TABLE);
@@ -559,7 +565,8 @@ void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3]) {
 
     glPushMatrix();
     glTranslatef(x, y, z);
-//    glRotatef(rotAngle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    glRotatef(rotAngle, rotAxis[0], rotAxis[1], rotAxis[2]);
+    glScalef(scaleX, scaleY, scaleZ);
     drawModel(chair);
     glPopMatrix();
 }
@@ -615,6 +622,7 @@ void drawFancyCouch(float x, float y, float z, int rotationAxis[], float angle) 
     glPushMatrix();
     glTranslatef(x, y, z);
     glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    glScalef(1.2, 1.2, 1.2);
     drawModel(fancyCouch);
     glPopMatrix();
 }
@@ -625,8 +633,8 @@ void drawBuilding() {
 
     drawModel(building);
     drawDoors();
-    drawFancyTable(22.5, 6, -6);
-    drawFancyCouch(20.1, 6, -7.5, axisY, 90);
+    drawFancyTable(22.5, 6.01, -6);
+    drawFancyCouch(20.1, 6.01, -7.5, axisY, 90);
     drawBigTable(16, 6, -2.5);
 
     // simple chairs
@@ -661,7 +669,14 @@ void drawBuilding() {
     drawChair(7.8, 6, -9);
 
     // fancy chairs
-    drawFancyChair(8, 5, 8, 0.4, axisX);
+    drawFancyChair(14.8, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
+    drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
+    drawFancyChair(10.6, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
+
+    drawFancyChair(22.8, 6, -6.5, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(23.2, 6, -3.2, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(24.1, 6, -5.1, -90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(22, 6, -4.9, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
 
     glPopMatrix();
 }
