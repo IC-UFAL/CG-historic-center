@@ -428,7 +428,62 @@ void drawBigTable(float x, float y, float z) {
     glPopMatrix();
 }
 
+void drawChair(float x, float y, float z) {
+    Model chair;
 
+    // Back Left Leg
+    chair.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0),
+                           new Point(0.1, 0.15, 0), new Point(0.07, 0, 0.03), COLOR_TABLE);
+    chair.addRectFace(new Point(0.1, 0.15, 0.1), new Point(0.07, 0, 0.07), COLOR_TABLE);
+    chair.addRectFace(new Point(0, 0.15, 0.1), new Point(0.03, 0, 0.07), COLOR_TABLE);
+    chair.addRectFace(new Point(0, 0.15, 0), new Point(0.03, 0, 0.03), COLOR_TABLE);
+    chair.addCube(new Point(0, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE);
+
+    // Back Right Leg
+    chair.addRectFace(new Point(0.53, 0, 0.03), new Point(0.5, 0.15, 0),
+                           new Point(0.6, 0.15, 0), new Point(0.57, 0, 0.03), COLOR_TABLE);
+    chair.addRectFace(new Point(0.6, 0.15, 0.1), new Point(0.57, 0, 0.07), COLOR_TABLE);
+    chair.addRectFace(new Point(0.5, 0.15, 0.1), new Point(0.53, 0, 0.07), COLOR_TABLE);
+    chair.addRectFace(new Point(0.5, 0.15, 0), new Point(0.53, 0, 0.03), COLOR_TABLE);
+    chair.addCube(new Point(0.5, 0.15, 0), 0.1, 0.65, 0.1, COLOR_TABLE);
+
+    // Front Left Leg
+    chair.addRectFace(new Point(0.03, 0, 0.83), new Point(0, 0.15, 0.8),
+                           new Point(0.1, 0.15, 0.8), new Point(0.07, 0, 0.83), COLOR_TABLE);
+    chair.addRectFace(new Point(0.1, 0.15, 0.9), new Point(0.07, 0, 0.87), COLOR_TABLE);
+    chair.addRectFace(new Point(0, 0.15, 0.9), new Point(0.03, 0, 0.87), COLOR_TABLE);
+    chair.addRectFace(new Point(0, 0.15, 0.8), new Point(0.03, 0, 0.83), COLOR_TABLE);
+    chair.addCube(new Point(0, 0.15, 0.8), 0.1, 0.65, 0.1, COLOR_TABLE);
+
+    // Front Right Leg
+    chair.addRectFace(new Point(0.53, 0, 0.83), new Point(0.5, 0.15, 0.8),
+                           new Point(0.6, 0.15, 0.8), new Point(0.57, 0, 0.83), COLOR_TABLE);
+    chair.addRectFace(new Point(0.6, 0.15, 0.9), new Point(0.57, 0, 0.87), COLOR_TABLE);
+    chair.addRectFace(new Point(0.5, 0.15, 0.9), new Point(0.53, 0, 0.87), COLOR_TABLE);
+    chair.addRectFace(new Point(0.5, 0.15, 0.8), new Point(0.53, 0, 0.83), COLOR_TABLE);
+    chair.addCube(new Point(0.5, 0.15, 0.8), 0.1, 0.65, 0.1, COLOR_TABLE);
+
+    // Seat
+    chair.addCube(new Point(-0.1, 0.8, 0), 0.8, 0.1, 0.95, COLOR_TABLE_TOP_SIDE);
+
+    // Gold seat
+    chair.addRectFace(new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85),
+                      new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15), COLOR_TABLE_GOLD);
+
+    // Backrest
+    chair.addCube(new Point(-0.1, 0.8, 0), 0.8, 0.9, 0.075, COLOR_TABLE_TOP_SIDE);
+
+    // Arms
+    chair.addCube(new Point(-0.1, 1.15, 0), 0.05, 0.05, 0.9, COLOR_TABLE);
+    chair.addCube(new Point(0.65, 1.15, 0), 0.05, 0.05, 0.9, COLOR_TABLE);
+    chair.addCube(new Point(-0.1, 0.8, 0.8), 0.05, 0.35, 0.05, COLOR_TABLE_TOP_SIDE);
+    chair.addCube(new Point(0.65, 0.8, 0.8), 0.05, 0.35, 0.05, COLOR_TABLE_TOP_SIDE);
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    drawModel(chair);
+    glPopMatrix();
+}
 
 void drawBuilding() {
     glPushMatrix();
@@ -438,7 +493,47 @@ void drawBuilding() {
     drawDoors();
     drawFancyTable(22, 6, -6);
     drawBigTable(16, 6, -2.5);
-    
+    // simple chairs
+    drawChair(16.5, 6, -7);
+    drawChair(15.8, 6, -7);
+    drawChair(15.1, 6, -7);
+    drawChair(14.4, 6, -7);
+
+    drawChair(13.2, 6, -7);
+    drawChair(12.5, 6, -7);
+    drawChair(11.8, 6, -7);
+    drawChair(11.1, 6, -7);
+
+    drawChair(9.9, 6, -7);
+    drawChair(9.2, 6, -7);
+    drawChair(8.5, 6, -7);
+    drawChair(7.8, 6, -7);
+
+    drawChair(16.5, 6, -9);
+    drawChair(15.8, 6, -9);
+    drawChair(15.1, 6, -9);
+    drawChair(14.4, 6, -9);
+
+    drawChair(13.2, 6, -9);
+    drawChair(12.5, 6, -9);
+    drawChair(11.8, 6, -9);
+    drawChair(11.1, 6, -9);
+
+    drawChair(9.9, 6, -9);
+    drawChair(9.2, 6, -9);
+    drawChair(8.5, 6, -9);
+    drawChair(7.8, 6, -9);
+
+//    drawChair(5, 6, 5);
+//    drawChair(5, 6, 5);
+//    drawChair(5, 6, 5);
+//    drawChair(5, 6, 5);
+//
+//    drawChair(5, 6, 5);
+//    drawChair(5, 6, 5);
+//    drawChair(5, 6, 5);
+//    drawChair(5, 6, 5);
+
 
     glPopMatrix();
 }
