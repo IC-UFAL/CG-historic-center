@@ -47,7 +47,31 @@ bool keyPressed[256], specialKeyPressed[256];
 
 static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
 
+void setupLight() {
+//    glEnable(GL_NORMALIZE);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+//    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+//    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+    glShadeModel(GL_SMOOTH);
+}
+
+void light() {
+//    GLfloat lightSpecular[] = {0.5, 0.5, 0.5, 1};  glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+    GLfloat lightAmbient[] = {0.5, 0.5, 0.5};  glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+    GLfloat lightDiffuse[] = {0.3, 0.3, 0.3}; glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+
+    GLfloat materialDiffuse[] = {1, 1, 1}; glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuse);
+
+    GLfloat lightPosition[] = {12.5, 10, 20, 1};
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+}
+
 void init() {
+    setupLight();
+
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
@@ -372,10 +396,10 @@ void init() {
     bigTable.addRectFace(new Point(-2.6, 1.6, -1.6), new Point(-2.6, 1.6, -1.7), COLOR_TABLE);
 
     // legs
-    bigTable.addCylinder(new Point(-0.1, 0, -0.1), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
-    bigTable.addCylinder(new Point(-0.1, 0, -1.6), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
-    bigTable.addCylinder(new Point(-6.8, 0, -1.6), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
-    bigTable.addCylinder(new Point(-6.8, 0, -0.1), 0.1, 0.1, 0.1, -90.0, axisX, COLOR_DOOR);
+    bigTable.addCylinder(new Point(-0.1, 0, -0.1), 0.1, 0.1, 0.1, -90.0f, axisX, COLOR_DOOR);
+    bigTable.addCylinder(new Point(-0.1, 0, -1.6), 0.1, 0.1, 0.1, -90.0f, axisX, COLOR_DOOR);
+    bigTable.addCylinder(new Point(-6.8, 0, -1.6), 0.1, 0.1, 0.1, -90.0f, axisX, COLOR_DOOR);
+    bigTable.addCylinder(new Point(-6.8, 0, -0.1), 0.1, 0.1, 0.1, -90.0f, axisX, COLOR_DOOR);
 
     ///-------------------------------------------------- Chair -----------------------------------------------------///
     // Back Left Leg
@@ -553,6 +577,7 @@ void drawModel(const Model &model) {
         glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
         glBegin(GL_POLYGON);
         for (auto &point : face->points) {
+            glNormal3d(point->x, point->y, point->z);
             glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
         }
         glEnd();
@@ -618,7 +643,7 @@ void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3], f
 
     // Fancy Backrest
     seats.addRectFace(fancyChairSeats[1][0], fancyChairSeats[1][1], fancyChairSeats[1][2], fancyChairSeats[1][3],
-            color);
+                      color);
     drawModel(seats);
 
     glPopMatrix();
@@ -640,8 +665,8 @@ void drawBuilding() {
     drawModel(building);
     drawDoors();
     drawFancyTable(22.5, 6.01, -6);
-    drawFancyCouch(20.1, 6.01, -7.5, axisY, 90);
-    drawBigTable(16, 6, -2.5);
+    drawFancyCouch(20.1, 6.01, -7.5f, axisY, 90);
+    drawBigTable(16, 6, -2.5f);
 
     // simple chairs
     drawChair(16.5, 6, -7);
@@ -679,10 +704,10 @@ void drawBuilding() {
     drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
     drawFancyChair(10.6, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
 
-    drawFancyChair(22.8, 6, -6.5, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(23.2, 6, -3.2, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(24.1, 6, -5.1, -90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(22, 6, -4.9, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(22.8, 6, -6.5f, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(23.2, 6, -3.2f, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(24.1, 6, -5.1f, -90.0f, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(22, 6, -4.9f, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
 
     glPopMatrix();
 }
@@ -772,6 +797,9 @@ void renderScene(int) {
               cam->position.z + cam->direction.z,
               0.0f, 1.0f, 0.0f);
 
+    // Set the light
+    light();
+
     // Draw ground
     glColor3f(0.0, 0.65, 0.0);
     glBegin(GL_QUADS);
@@ -837,10 +865,6 @@ int main(int argc, char **argv) {
     glutKeyboardUpFunc(keyboardUpHandler);
     glutSpecialFunc(specialFuncHandler);
     glutSpecialUpFunc(specialFuncUpHandler);
-
-
-    // OpenGL init
-    glEnable(GL_DEPTH_TEST);
 
     // enter GLUT event processing cycle
     glutMainLoop();
