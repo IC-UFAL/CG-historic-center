@@ -32,6 +32,9 @@
 #define COLOR_COUCH_PAD_SEAT new Color(174, 190, 236)
 #define COLOR_CHAIR_WOOD new Color(100, 0, 0)
 
+static unsigned int redisplay_interval = 1000 / 60;
+static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
+
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.1, 0.01);
 Model building, doors, fancyTable, bigTable, chair, fancyChair, fancyCouch;
 Point *fancyChairSeats[2][4] = {
@@ -39,13 +42,12 @@ Point *fancyChairSeats[2][4] = {
         {new Point(0, 1, 0.08),    new Point(0.6, 1, 0.08),  new Point(0.6, 1.9, 0.08),  new Point(0.0, 1.9, 0.08)}
 };
 
-static unsigned int redisplay_interval = 1000 / 60;
-
 float door_angle = 0.0f;
-
-bool keyPressed[256], specialKeyPressed[256];
-
-static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
+bool keyPressed[256], specialKeyPressed[256], enableLight = true;
+GLfloat lightPosition[] = {12.5, 10, 20, 1};
+GLfloat lightAmbient[] = {0.5, 0.5, 0.5};
+GLfloat lightDiffuse[] = {0.3, 0.3, 0.3};
+GLfloat lightSpecular[] = {0, 0, 0};
 
 void setupLight() {
 //    glEnable(GL_NORMALIZE);
@@ -59,14 +61,26 @@ void setupLight() {
 }
 
 void light() {
-//    GLfloat lightSpecular[] = {0.5, 0.5, 0.5, 1};  glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
-    GLfloat lightAmbient[] = {0.5, 0.5, 0.5};  glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
-    GLfloat lightDiffuse[] = {0.3, 0.3, 0.3}; glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, lightSpecular);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, lightAmbient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, lightDiffuse);
 
-    GLfloat materialDiffuse[] = {1, 1, 1}; glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, materialDiffuse);
+    GLfloat whiteMaterial[] = {1, 1, 1};
+    GLfloat blankMaterial[] = {0.0, 0.0, 0.0};
 
-    GLfloat lightPosition[] = {12.5, 10, 20, 1};
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, whiteMaterial);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, whiteMaterial);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, whiteMaterial);
+
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, whiteMaterial);
+    glPushMatrix();
+    glTranslatef(lightPosition[0] - 5, lightPosition[1], lightPosition[2]);
+    glColor3f(1, 1, 1);
+    glutSolidSphere(0.1, 100, 100);
+    glPopMatrix();
+
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, blankMaterial);
 }
 
 void init() {
@@ -736,37 +750,73 @@ void changeSize(int w, int h) {
 }
 
 void updateCamera() {
-    if (keyPressed['w']) {
-        cam->moveForward();
-    }
-    if (keyPressed['s']) {
-        cam->moveBackward();
-    }
-    if (keyPressed['a']) {
-        cam->moveLeft();
-    }
-    if (keyPressed['d']) {
-        cam->moveRight();
-    }
-    if (keyPressed[' ']) {
-        cam->moveUp();
-    }
-    if (specialKeyPressed[GLUT_KEY_SHIFT]) {
-        cam->moveDown();
-    }
-    if (specialKeyPressed[GLUT_KEY_LEFT]) {
-        cam->lookLeft();
-    }
-    if (specialKeyPressed[GLUT_KEY_RIGHT]) {
-        cam->lookRight();
-    }
-    if (specialKeyPressed[GLUT_KEY_UP]) {
-        cam->lookUp();
-    }
-    if (specialKeyPressed[GLUT_KEY_DOWN]) {
-        cam->lookDown();
-    }
+    // Lights
+    if (keyPressed['l']) {
+        if (keyPressed['w']) {
+            lightPosition[2] -= 0.05;
+        }
+        if (keyPressed['s']) {
+            lightPosition[2] += 0.05;
+        }
+        if (keyPressed['a']) {
+            lightPosition[0] -= 0.05;
+        }
+        if (keyPressed['d']) {
+            lightPosition[0] += 0.05;
+        }
 
+        if (keyPressed['1']) {
+            if (lightAmbient[0] < 1)
+                lightAmbient[0] = lightAmbient[1] = lightAmbient[2] += 0.05;
+        } else if (keyPressed['!']) {
+            if (lightAmbient[0] > 0)
+                lightAmbient[0] = lightAmbient[1] = lightAmbient[2] -= 0.05;
+        } else if (keyPressed['2']) {
+            if (lightDiffuse[0] < 1)
+                lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] += 0.05;
+        } else if (keyPressed['@']) {
+            if (lightDiffuse[0] > 0)
+                lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] -= 0.05;
+        } else if (keyPressed['3']) {
+            if (lightSpecular[0] < 1)
+                lightSpecular[0] = lightSpecular[1] = lightSpecular[2] += 0.05;
+        } else if (keyPressed['#']) {
+            if (lightSpecular[0] > 0)
+                lightSpecular[0] = lightSpecular[1] = lightSpecular[2] -= 0.05;
+        }
+    } else {
+        // Movement
+        if (keyPressed['w']) {
+            cam->moveForward();
+        }
+        if (keyPressed['s']) {
+            cam->moveBackward();
+        }
+        if (keyPressed['a']) {
+            cam->moveLeft();
+        }
+        if (keyPressed['d']) {
+            cam->moveRight();
+        }
+        if (keyPressed[' ']) {
+            cam->moveUp();
+        }
+        if (specialKeyPressed[GLUT_KEY_SHIFT]) {
+            cam->moveDown();
+        }
+        if (specialKeyPressed[GLUT_KEY_LEFT]) {
+            cam->lookLeft();
+        }
+        if (specialKeyPressed[GLUT_KEY_RIGHT]) {
+            cam->lookRight();
+        }
+        if (specialKeyPressed[GLUT_KEY_UP]) {
+            cam->lookUp();
+        }
+        if (specialKeyPressed[GLUT_KEY_DOWN]) {
+            cam->lookDown();
+        }
+    }
 }
 
 void updateDoor() {
@@ -825,6 +875,13 @@ void keyboardHandler(unsigned char key, int x, int y) {
 
     if (key == 27)
         exit(0);
+    if (key == 13) {
+        enableLight = !enableLight;
+        if (enableLight)
+            glEnable(GL_LIGHTING);
+        else
+            glDisable(GL_LIGHTING);
+    }
 }
 
 void keyboardUpHandler(unsigned char key, int x, int y) {
