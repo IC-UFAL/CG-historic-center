@@ -92,7 +92,7 @@ void init() {
 
     initializeBuilding();
 
-    texture = LoadTexture("textures/main_floor.bmp", 256, 256);
+    texture = LoadTexture("textures/main_floor.bmp", 512, 512);
 }
 
 void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
