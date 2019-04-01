@@ -8,6 +8,7 @@
 #include "Face.h"
 #include "Model.h"
 #include "Camera.h"
+#include "Texture.h"
 
 #define GLUT_KEY_SHIFT 112
 #define COLOR_FOUNDATION new Color(230, 220, 170)
@@ -32,6 +33,8 @@
 #define COLOR_COUCH_PAD_SEAT new Color(174, 190, 236)
 #define COLOR_CHAIR_WOOD new Color(100, 0, 0)
 
+void initializeBuilding();
+
 static unsigned int redisplay_interval = 1000 / 60;
 static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
 
@@ -41,6 +44,7 @@ Point *fancyChairSeats[2][4] = {
         {new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85), new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15)},
         {new Point(0, 1, 0.08),    new Point(0.6, 1, 0.08),  new Point(0.6, 1.9, 0.08),  new Point(0.0, 1.9, 0.08)}
 };
+GLuint texture;
 
 float door_angle = 0.0f;
 bool keyPressed[256], specialKeyPressed[256], enableLight = true;
@@ -86,9 +90,398 @@ void light() {
 void init() {
     setupLight();
 
+    initializeBuilding();
+
+    texture = LoadTexture("textures/main_floor.bmp", 256, 256);
+}
+
+void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
+              Color *color) {
+    glPushMatrix();
+    glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
+    glTranslatef(GLfloat(p->x), GLfloat(p->y), GLfloat(p->z));
+    glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    glTranslatef(GLfloat(rotationPoint->x), GLfloat(rotationPoint->y), GLfloat(rotationPoint->z));
+    glScalef(width, height, depth);
+    glutSolidCube(1.0);
+    glPopMatrix();
+}
+
+void drawCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotationAxis[3], Color *color) {
+    glPushMatrix();
+    glTranslatef(GLfloat(pos->x), GLfloat(pos->y), GLfloat(pos->z));
+    glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
+    glRotatef(rotAngle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    gluCylinder(gluNewQuadric(), base, top, height, 50, 50);
+    glPopMatrix();
+}
+
+void drawModel(const Model &model) {
+    for (auto &face : model.faces) {
+        glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
+        glBegin(GL_POLYGON);
+        for (auto &point : face->points) {
+            glNormal3d(point->x, point->y, point->z);
+            glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
+        }
+        glEnd();
+    }
+
+    for (auto &cube : model.cubes) {
+        glColor3f(GLfloat(cube->color->R), GLfloat(cube->color->G), GLfloat(cube->color->B));
+        drawCube(cube->position, cube->width, cube->height, cube->depth, cube->rotationPoint, cube->rotationAngle,
+                 cube->rotationAxis, cube->color);
+    }
+
+    for (auto &cylinder : model.cylinders) {
+        drawCylinder(cylinder->position, cylinder->base, cylinder->top, cylinder->height, cylinder->rotationAngle,
+                     cylinder->rotationAxis, cylinder->color);
+    }
+}
+
+void drawDoors() {
+    int factor = 1;
+    for (auto &cube : doors.cubes) {
+        glColor3f(GLfloat(cube->color->R), GLfloat(cube->color->G), GLfloat(cube->color->B));
+        drawCube(cube->position, cube->width, cube->height, cube->depth, cube->rotationPoint, door_angle * factor,
+                 cube->rotationAxis, cube->color);
+        factor = -1;
+    }
+}
+
+void drawFancyTable(float x, float y, float z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    drawModel(fancyTable);
+    glPopMatrix();
+}
+
+void drawBigTable(float x, float y, float z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    drawModel(bigTable);
+    glPopMatrix();
+}
+
+void drawChair(float x, float y, float z) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glScalef(0.8, 0.8, 0.8);
+    drawModel(chair);
+    glPopMatrix();
+}
+
+void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3], float scaleX, float scaleY, float scaleZ,
+                    Color *color) {
+    Model seats;
+
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(rotAngle, rotAxis[0], rotAxis[1], rotAxis[2]);
+    glScalef(scaleX, scaleY, scaleZ);
+    drawModel(fancyChair);
+
+    // Fancy seat
+    seats.addRectFace(fancyChairSeats[0][0], fancyChairSeats[0][1], fancyChairSeats[0][2], fancyChairSeats[0][3],
+                      color);
+
+    // Fancy Backrest
+    seats.addRectFace(fancyChairSeats[1][0], fancyChairSeats[1][1], fancyChairSeats[1][2], fancyChairSeats[1][3],
+                      color);
+    drawModel(seats);
+
+    glPopMatrix();
+}
+
+void drawFancyCouch(float x, float y, float z, int rotationAxis[], float angle) {
+    glPushMatrix();
+    glTranslatef(x, y, z);
+    glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
+    glScalef(1.2, 1.2, 1.2);
+    drawModel(fancyCouch);
+    glPopMatrix();
+}
+
+void drawBuilding() {
+    glPushMatrix();
+    glTranslatef(building.x, building.y, building.z);
+
+    drawModel(building);
+    drawDoors();
+    drawFancyTable(22.5, 6.01, -6);
+    drawFancyCouch(20.1, 6.01, -7.5f, axisY, 90);
+    drawBigTable(16, 6, -2.5f);
+
+    // simple chairs
+    drawChair(16.5, 6, -7);
+    drawChair(15.8, 6, -7);
+    drawChair(15.1, 6, -7);
+    drawChair(14.4, 6, -7);
+
+    drawChair(13.2, 6, -7);
+    drawChair(12.5, 6, -7);
+    drawChair(11.8, 6, -7);
+    drawChair(11.1, 6, -7);
+
+    drawChair(9.9, 6, -7);
+    drawChair(9.2, 6, -7);
+    drawChair(8.5, 6, -7);
+    drawChair(7.8, 6, -7);
+
+    drawChair(16.5, 6, -9);
+    drawChair(15.8, 6, -9);
+    drawChair(15.1, 6, -9);
+    drawChair(14.4, 6, -9);
+
+    drawChair(13.2, 6, -9);
+    drawChair(12.5, 6, -9);
+    drawChair(11.8, 6, -9);
+    drawChair(11.1, 6, -9);
+
+    drawChair(9.9, 6, -9);
+    drawChair(9.2, 6, -9);
+    drawChair(8.5, 6, -9);
+    drawChair(7.8, 6, -9);
+
+    // fancy chairs
+    drawFancyChair(14.8, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
+    drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
+    drawFancyChair(10.6, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
+
+    drawFancyChair(22.8, 6, -6.5f, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(23.2, 6, -3.2f, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(24.1, 6, -5.1f, -90.0f, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(22, 6, -4.9f, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+
+    glPopMatrix();
+}
+
+void changeSize(int w, int h) {
+
+    // Prevent a divide by zero, when window is too short
+    // (you cant make a window of zero width).
+    if (h == 0) h = 1;
+    double ratio = w * 1.0 / h;
+
+    // Use the Projection Matrix
+    glMatrixMode(GL_PROJECTION);
+
+    // Reset Matrix
+    glLoadIdentity();
+
+    // Set the viewport to be the entire window
+    glViewport(0, 0, w, h);
+
+    // Set the correct perspective.
+    gluPerspective(45.0f, ratio, 0.1f, 100.0f);
+
+    // Get Back to the Modelview
+    glMatrixMode(GL_MODELVIEW);
+}
+
+void updateCamera() {
+    // Lights
+    if (keyPressed['l']) {
+        if (keyPressed['w']) {
+            lightPosition[2] -= 0.05;
+        }
+        if (keyPressed['s']) {
+            lightPosition[2] += 0.05;
+        }
+        if (keyPressed['a']) {
+            lightPosition[0] -= 0.05;
+        }
+        if (keyPressed['d']) {
+            lightPosition[0] += 0.05;
+        }
+
+        if (keyPressed['1']) {
+            if (lightAmbient[0] < 1)
+                lightAmbient[0] = lightAmbient[1] = lightAmbient[2] += 0.05;
+        } else if (keyPressed['!']) {
+            if (lightAmbient[0] > 0)
+                lightAmbient[0] = lightAmbient[1] = lightAmbient[2] -= 0.05;
+        } else if (keyPressed['2']) {
+            if (lightDiffuse[0] < 1)
+                lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] += 0.05;
+        } else if (keyPressed['@']) {
+            if (lightDiffuse[0] > 0)
+                lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] -= 0.05;
+        } else if (keyPressed['3']) {
+            if (lightSpecular[0] < 1)
+                lightSpecular[0] = lightSpecular[1] = lightSpecular[2] += 0.05;
+        } else if (keyPressed['#']) {
+            if (lightSpecular[0] > 0)
+                lightSpecular[0] = lightSpecular[1] = lightSpecular[2] -= 0.05;
+        }
+    } else {
+        // Movement
+        if (keyPressed['w']) {
+            cam->moveForward();
+        }
+        if (keyPressed['s']) {
+            cam->moveBackward();
+        }
+        if (keyPressed['a']) {
+            cam->moveLeft();
+        }
+        if (keyPressed['d']) {
+            cam->moveRight();
+        }
+        if (keyPressed[' ']) {
+            cam->moveUp();
+        }
+        if (specialKeyPressed[GLUT_KEY_SHIFT]) {
+            cam->moveDown();
+        }
+        if (specialKeyPressed[GLUT_KEY_LEFT]) {
+            cam->lookLeft();
+        }
+        if (specialKeyPressed[GLUT_KEY_RIGHT]) {
+            cam->lookRight();
+        }
+        if (specialKeyPressed[GLUT_KEY_UP]) {
+            cam->lookUp();
+        }
+        if (specialKeyPressed[GLUT_KEY_DOWN]) {
+            cam->lookDown();
+        }
+    }
+}
+
+void updateDoor() {
+    if (keyPressed['o'])
+        if (door_angle <= 118.0f)
+            door_angle += 2.0f;
+    if (keyPressed['c'])
+        if (door_angle >= 2.0f)
+            door_angle -= 2.0f;
+}
+
+void update() {
+    updateCamera();
+    updateDoor();
+}
+void square() {
+    glBindTexture(GL_TEXTURE_2D, texture); //bind our texture to our shape
+//    glRotatef(angle, 1.0f, 1.0f, 1.0f);
+    glBegin(GL_QUADS);
+    glTexCoord2d(0.0, 0.0);
+    glVertex2d(-1.0, -1.0); //with our vertices we have to assign a texcoord
+    glTexCoord2d(1.0, 0.0);
+    glVertex2d(+1.0, -1.0); //so that our texture has some points to draw to
+    glTexCoord2d(1.0, 1.0);
+    glVertex2d(+1.0, +1.0);
+    glTexCoord2d(0.0, 1.0);
+    glVertex2d(-1.0, +1.0);
+    glEnd();
+}
+
+void renderScene(int) {
+    update();
+
     // sky color
     glClearColor(0.0, 0.7, 1.0, 1.0);
 
+    // Clear Color and Depth Buffers
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Reset transformations
+    glLoadIdentity();
+
+    // Set the camera
+    gluLookAt(cam->position.x, cam->position.y, cam->position.z,
+              cam->position.x + cam->direction.x, cam->position.y + cam->direction.y,
+              cam->position.z + cam->direction.z,
+              0.0f, 1.0f, 0.0f);
+
+    // Set the light
+    light();
+
+    // Draw ground
+    glColor3f(0.0, 0.65, 0.0);
+    glBegin(GL_QUADS);
+    glVertex3f(-100.0f, 0.0f, -100.0f);
+    glVertex3f(-100.0f, 0.0f, 100.0f);
+    glVertex3f(100.0f, 0.0f, 100.0f);
+    glVertex3f(100.0f, 0.0f, -100.0f);
+    glEnd();
+
+    drawBuilding();
+
+    glEnable(GL_TEXTURE_2D);
+    square();
+    glDisable(GL_TEXTURE_2D);
+
+    glFlush();
+    glutSwapBuffers();
+    glutTimerFunc(redisplay_interval, renderScene, 0);
+}
+
+void renderScene() {
+    renderScene(0);
+}
+
+void keyboardHandler(unsigned char key, int x, int y) {
+    keyPressed[tolower(key)] = true;
+
+    if (key == 27)
+        exit(0);
+    if (key == 13) {
+        enableLight = !enableLight;
+        if (enableLight)
+            glEnable(GL_LIGHTING);
+        else
+            glDisable(GL_LIGHTING);
+    }
+}
+
+void keyboardUpHandler(unsigned char key, int x, int y) {
+    keyPressed[tolower(key)] = false;
+    if (key == 'q' && cam->speed > 0.03) {
+        cam->speed -= 0.01;
+    }
+    if (key == 'e' && cam->speed < 0.2) {
+        cam->speed += 0.01;
+    }
+}
+
+void specialFuncHandler(int key, int x, int y) {
+    specialKeyPressed[key] = true;
+}
+
+void specialFuncUpHandler(int key, int x, int y) {
+    specialKeyPressed[key] = false;
+}
+
+int main(int argc, char **argv) {
+
+    // init GLUT and create window
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    glutInitWindowPosition(50, 50);
+    glutInitWindowSize(800, 600);
+    glutCreateWindow("CH - Associacao Comercial no Jaragua");
+
+    init();
+
+    // register callbacks
+    glutDisplayFunc(renderScene);
+    glutReshapeFunc(changeSize);
+//    glutIdleFunc(update);
+    glutTimerFunc(redisplay_interval, renderScene, 0);
+    glutKeyboardFunc(keyboardHandler);
+    glutKeyboardUpFunc(keyboardUpHandler);
+    glutSpecialFunc(specialFuncHandler);
+    glutSpecialUpFunc(specialFuncUpHandler);
+
+    // enter GLUT event processing cycle
+    glutMainLoop();
+
+    return 1;
+}
+
+void initializeBuilding() {
     // Foundation
     building.addRectFace(new Point(-0.3, 0, 0.3), new Point(-0.3, 2, 0.3), new Point(5.3, 2, 0.3),
                          new Point(5.3, 0, 0.3), COLOR_FOUNDATION);
@@ -563,368 +956,4 @@ void init() {
 
     // Seat
     fancyCouch.addCube(new Point(0.1, 0.25, 0.01), 1.8, 0.07, 0.49, COLOR_COUCH_PAD_SEAT);
-}
-
-void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
-              Color *color) {
-    glPushMatrix();
-    glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
-    glTranslatef(GLfloat(p->x), GLfloat(p->y), GLfloat(p->z));
-    glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
-    glTranslatef(GLfloat(rotationPoint->x), GLfloat(rotationPoint->y), GLfloat(rotationPoint->z));
-    glScalef(width, height, depth);
-    glutSolidCube(1.0);
-    glPopMatrix();
-}
-
-void drawCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotationAxis[3], Color *color) {
-    glPushMatrix();
-    glTranslatef(GLfloat(pos->x), GLfloat(pos->y), GLfloat(pos->z));
-    glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
-    glRotatef(rotAngle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
-    gluCylinder(gluNewQuadric(), base, top, height, 50, 50);
-    glPopMatrix();
-}
-
-void drawModel(const Model &model) {
-    for (auto &face : model.faces) {
-        glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
-        glBegin(GL_POLYGON);
-        for (auto &point : face->points) {
-            glNormal3d(point->x, point->y, point->z);
-            glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
-        }
-        glEnd();
-    }
-
-    for (auto &cube : model.cubes) {
-        glColor3f(GLfloat(cube->color->R), GLfloat(cube->color->G), GLfloat(cube->color->B));
-        drawCube(cube->position, cube->width, cube->height, cube->depth, cube->rotationPoint, cube->rotationAngle,
-                 cube->rotationAxis, cube->color);
-    }
-
-    for (auto &cylinder : model.cylinders) {
-        drawCylinder(cylinder->position, cylinder->base, cylinder->top, cylinder->height, cylinder->rotationAngle,
-                     cylinder->rotationAxis, cylinder->color);
-    }
-}
-
-void drawDoors() {
-    int factor = 1;
-    for (auto &cube : doors.cubes) {
-        glColor3f(GLfloat(cube->color->R), GLfloat(cube->color->G), GLfloat(cube->color->B));
-        drawCube(cube->position, cube->width, cube->height, cube->depth, cube->rotationPoint, door_angle * factor,
-                 cube->rotationAxis, cube->color);
-        factor = -1;
-    }
-}
-
-void drawFancyTable(float x, float y, float z) {
-    glPushMatrix();
-    glTranslatef(x, y, z);
-    drawModel(fancyTable);
-    glPopMatrix();
-}
-
-void drawBigTable(float x, float y, float z) {
-    glPushMatrix();
-    glTranslatef(x, y, z);
-    drawModel(bigTable);
-    glPopMatrix();
-}
-
-void drawChair(float x, float y, float z) {
-    glPushMatrix();
-    glTranslatef(x, y, z);
-    glScalef(0.8, 0.8, 0.8);
-    drawModel(chair);
-    glPopMatrix();
-}
-
-void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3], float scaleX, float scaleY, float scaleZ,
-                    Color *color) {
-    Model seats;
-
-    glPushMatrix();
-    glTranslatef(x, y, z);
-    glRotatef(rotAngle, rotAxis[0], rotAxis[1], rotAxis[2]);
-    glScalef(scaleX, scaleY, scaleZ);
-    drawModel(fancyChair);
-
-    // Fancy seat
-    seats.addRectFace(fancyChairSeats[0][0], fancyChairSeats[0][1], fancyChairSeats[0][2], fancyChairSeats[0][3],
-                      color);
-
-    // Fancy Backrest
-    seats.addRectFace(fancyChairSeats[1][0], fancyChairSeats[1][1], fancyChairSeats[1][2], fancyChairSeats[1][3],
-                      color);
-    drawModel(seats);
-
-    glPopMatrix();
-}
-
-void drawFancyCouch(float x, float y, float z, int rotationAxis[], float angle) {
-    glPushMatrix();
-    glTranslatef(x, y, z);
-    glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
-    glScalef(1.2, 1.2, 1.2);
-    drawModel(fancyCouch);
-    glPopMatrix();
-}
-
-void drawBuilding() {
-    glPushMatrix();
-    glTranslatef(building.x, building.y, building.z);
-
-    drawModel(building);
-    drawDoors();
-    drawFancyTable(22.5, 6.01, -6);
-    drawFancyCouch(20.1, 6.01, -7.5f, axisY, 90);
-    drawBigTable(16, 6, -2.5f);
-
-    // simple chairs
-    drawChair(16.5, 6, -7);
-    drawChair(15.8, 6, -7);
-    drawChair(15.1, 6, -7);
-    drawChair(14.4, 6, -7);
-
-    drawChair(13.2, 6, -7);
-    drawChair(12.5, 6, -7);
-    drawChair(11.8, 6, -7);
-    drawChair(11.1, 6, -7);
-
-    drawChair(9.9, 6, -7);
-    drawChair(9.2, 6, -7);
-    drawChair(8.5, 6, -7);
-    drawChair(7.8, 6, -7);
-
-    drawChair(16.5, 6, -9);
-    drawChair(15.8, 6, -9);
-    drawChair(15.1, 6, -9);
-    drawChair(14.4, 6, -9);
-
-    drawChair(13.2, 6, -9);
-    drawChair(12.5, 6, -9);
-    drawChair(11.8, 6, -9);
-    drawChair(11.1, 6, -9);
-
-    drawChair(9.9, 6, -9);
-    drawChair(9.2, 6, -9);
-    drawChair(8.5, 6, -9);
-    drawChair(7.8, 6, -9);
-
-    // fancy chairs
-    drawFancyChair(14.8, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
-    drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
-    drawFancyChair(10.6, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
-
-    drawFancyChair(22.8, 6, -6.5f, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(23.2, 6, -3.2f, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(24.1, 6, -5.1f, -90.0f, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(22, 6, -4.9f, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-
-    glPopMatrix();
-}
-
-void changeSize(int w, int h) {
-
-    // Prevent a divide by zero, when window is too short
-    // (you cant make a window of zero width).
-    if (h == 0) h = 1;
-    double ratio = w * 1.0 / h;
-
-    // Use the Projection Matrix
-    glMatrixMode(GL_PROJECTION);
-
-    // Reset Matrix
-    glLoadIdentity();
-
-    // Set the viewport to be the entire window
-    glViewport(0, 0, w, h);
-
-    // Set the correct perspective.
-    gluPerspective(45.0f, ratio, 0.1f, 100.0f);
-
-    // Get Back to the Modelview
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void updateCamera() {
-    // Lights
-    if (keyPressed['l']) {
-        if (keyPressed['w']) {
-            lightPosition[2] -= 0.05;
-        }
-        if (keyPressed['s']) {
-            lightPosition[2] += 0.05;
-        }
-        if (keyPressed['a']) {
-            lightPosition[0] -= 0.05;
-        }
-        if (keyPressed['d']) {
-            lightPosition[0] += 0.05;
-        }
-
-        if (keyPressed['1']) {
-            if (lightAmbient[0] < 1)
-                lightAmbient[0] = lightAmbient[1] = lightAmbient[2] += 0.05;
-        } else if (keyPressed['!']) {
-            if (lightAmbient[0] > 0)
-                lightAmbient[0] = lightAmbient[1] = lightAmbient[2] -= 0.05;
-        } else if (keyPressed['2']) {
-            if (lightDiffuse[0] < 1)
-                lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] += 0.05;
-        } else if (keyPressed['@']) {
-            if (lightDiffuse[0] > 0)
-                lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] -= 0.05;
-        } else if (keyPressed['3']) {
-            if (lightSpecular[0] < 1)
-                lightSpecular[0] = lightSpecular[1] = lightSpecular[2] += 0.05;
-        } else if (keyPressed['#']) {
-            if (lightSpecular[0] > 0)
-                lightSpecular[0] = lightSpecular[1] = lightSpecular[2] -= 0.05;
-        }
-    } else {
-        // Movement
-        if (keyPressed['w']) {
-            cam->moveForward();
-        }
-        if (keyPressed['s']) {
-            cam->moveBackward();
-        }
-        if (keyPressed['a']) {
-            cam->moveLeft();
-        }
-        if (keyPressed['d']) {
-            cam->moveRight();
-        }
-        if (keyPressed[' ']) {
-            cam->moveUp();
-        }
-        if (specialKeyPressed[GLUT_KEY_SHIFT]) {
-            cam->moveDown();
-        }
-        if (specialKeyPressed[GLUT_KEY_LEFT]) {
-            cam->lookLeft();
-        }
-        if (specialKeyPressed[GLUT_KEY_RIGHT]) {
-            cam->lookRight();
-        }
-        if (specialKeyPressed[GLUT_KEY_UP]) {
-            cam->lookUp();
-        }
-        if (specialKeyPressed[GLUT_KEY_DOWN]) {
-            cam->lookDown();
-        }
-    }
-}
-
-void updateDoor() {
-    if (keyPressed['o'])
-        if (door_angle <= 118.0f)
-            door_angle += 2.0f;
-    if (keyPressed['c'])
-        if (door_angle >= 2.0f)
-            door_angle -= 2.0f;
-}
-
-void update() {
-    updateCamera();
-    updateDoor();
-}
-
-void renderScene(int) {
-    update();
-    // Clear Color and Depth Buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Reset transformations
-    glLoadIdentity();
-
-    // Set the camera
-    gluLookAt(cam->position.x, cam->position.y, cam->position.z,
-              cam->position.x + cam->direction.x, cam->position.y + cam->direction.y,
-              cam->position.z + cam->direction.z,
-              0.0f, 1.0f, 0.0f);
-
-    // Set the light
-    light();
-
-    // Draw ground
-    glColor3f(0.0, 0.65, 0.0);
-    glBegin(GL_QUADS);
-    glVertex3f(-100.0f, 0.0f, -100.0f);
-    glVertex3f(-100.0f, 0.0f, 100.0f);
-    glVertex3f(100.0f, 0.0f, 100.0f);
-    glVertex3f(100.0f, 0.0f, -100.0f);
-    glEnd();
-
-    drawBuilding();
-
-    glFlush();
-    glutSwapBuffers();
-    glutTimerFunc(redisplay_interval, renderScene, 0);
-}
-
-void renderScene() {
-    renderScene(0);
-}
-
-void keyboardHandler(unsigned char key, int x, int y) {
-    keyPressed[tolower(key)] = true;
-
-    if (key == 27)
-        exit(0);
-    if (key == 13) {
-        enableLight = !enableLight;
-        if (enableLight)
-            glEnable(GL_LIGHTING);
-        else
-            glDisable(GL_LIGHTING);
-    }
-}
-
-void keyboardUpHandler(unsigned char key, int x, int y) {
-    keyPressed[tolower(key)] = false;
-    if (key == 'q' && cam->speed > 0.03) {
-        cam->speed -= 0.01;
-    }
-    if (key == 'e' && cam->speed < 0.2) {
-        cam->speed += 0.01;
-    }
-}
-
-void specialFuncHandler(int key, int x, int y) {
-    specialKeyPressed[key] = true;
-}
-
-void specialFuncUpHandler(int key, int x, int y) {
-    specialKeyPressed[key] = false;
-}
-
-int main(int argc, char **argv) {
-
-    // init GLUT and create window
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowPosition(50, 50);
-    glutInitWindowSize(800, 600);
-    glutCreateWindow("CH - Associacao Comercial no Jaragua");
-
-    init();
-
-    // register callbacks
-    glutDisplayFunc(renderScene);
-    glutReshapeFunc(changeSize);
-//    glutIdleFunc(update);
-    glutTimerFunc(redisplay_interval, renderScene, 0);
-    glutKeyboardFunc(keyboardHandler);
-    glutKeyboardUpFunc(keyboardUpHandler);
-    glutSpecialFunc(specialFuncHandler);
-    glutSpecialUpFunc(specialFuncUpHandler);
-
-    // enter GLUT event processing cycle
-    glutMainLoop();
-
-    return 1;
 }
