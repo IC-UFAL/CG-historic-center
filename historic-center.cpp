@@ -16,7 +16,6 @@
 #define COLOR_EXTERNAL_WALL_2 new Color(227, 202, 153)
 #define COLOR_EXTERNAL_DETAILS new Color(255, 243, 191)
 #define COLOR_FLOOR new Color(208, 156, 98)
-#define COLOR_SECOND_FLOOR new Color(200, 0, 0)
 #define COLOR_STAIRS_FRONT new Color(0.7, 0.7, 0.7)
 #define COLOR_STAIRS_TOP new Color(0.55, 0.55, 0.55)
 #define COLOR_DOOR new Color(77, 57, 36)
@@ -44,7 +43,7 @@ Point *fancyChairSeats[2][4] = {
         {new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85), new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15)},
         {new Point(0, 1, 0.08),    new Point(0.6, 1, 0.08),  new Point(0.6, 1.9, 0.08),  new Point(0.0, 1.9, 0.08)}
 };
-GLuint texture;
+GLuint textures[256];
 
 float door_angle = 0.0f;
 bool keyPressed[256], specialKeyPressed[256], enableLight = true;
@@ -92,7 +91,8 @@ void init() {
 
     initializeBuilding();
 
-    texture = LoadTexture("textures/main_floor.bmp", 512, 512);
+    textures[0] = loadTexture("textures/main_floor.bmp", 512, 512);
+    textures[1] = loadTexture("textures/chess_floor.bmp", 1104, 1104);
 }
 
 void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
@@ -118,13 +118,60 @@ void drawCylinder(Point *pos, float base, float top, float height, float rotAngl
 
 void drawModel(const Model &model) {
     for (auto &face : model.faces) {
+        if (face->texture_id != -1)
+            glEnable(GL_TEXTURE_2D);
+
+        if (face->debug)
+            printf("xDiff: %f, yDiff: %f, zDiff: %f, points: %d\n", face->xDiff, face->yDiff, face->zDiff,
+                   face->points.size());
+
+
+
+        float xTexScale, yTexScale;
+        if (face->zDiff == 0) {
+            xTexScale = face->xDiff;
+            yTexScale = face->yDiff;
+        } else if (face->yDiff == 0) {
+            xTexScale = face->xDiff;
+            yTexScale = face->zDiff;
+        } else {
+            xTexScale = face->zDiff;
+            yTexScale = face->yDiff;
+        }
+
+        if (face->texDir == -1) {
+            float aux = xTexScale;
+            xTexScale = yTexScale;
+            yTexScale = aux;
+        }
+        
+        if (face->debug)
+            printf("xScale: %f, yScale: %f\n", xTexScale, yTexScale);
+
+        glBindTexture(GL_TEXTURE_2D, textures[face->texture_id]);
         glColor3f(GLfloat(face->color->R), GLfloat(face->color->G), GLfloat(face->color->B));
+
         glBegin(GL_POLYGON);
+        int i = 0;
         for (auto &point : face->points) {
             glNormal3d(point->x, point->y, point->z);
+
+            float xTex = i, yTex = i;
+            if (face->points.size() == 3) {
+                xTex = i / 2.0;
+                yTex = i == 1 ? 1 : 0;
+            } else if (face->points.size() == 4) {
+                xTex = i < 2 ? 0 : 1;
+                yTex = i == 0 || i == 3 ? 0 : 1;
+            }
+
+            glTexCoord2d(xTex * xTexScale, yTex * yTexScale);
             glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
+            i++;
         }
         glEnd();
+
+        glDisable(GL_TEXTURE_2D);
     }
 
     for (auto &cube : model.cubes) {
@@ -294,23 +341,29 @@ void updateCamera() {
         if (keyPressed['d']) {
             lightPosition[0] += 0.05;
         }
+        if (keyPressed[' ']) {
+            lightPosition[1] += 0.05;
+        }
+        if (specialKeyPressed[GLUT_KEY_SHIFT]) {
+            lightPosition[1] -= 0.05;
+        }
 
-        if (keyPressed['1']) {
+        if (specialKeyPressed[GLUT_KEY_F1]) {
             if (lightAmbient[0] < 1)
                 lightAmbient[0] = lightAmbient[1] = lightAmbient[2] += 0.05;
-        } else if (keyPressed['!']) {
+        } else if (keyPressed['1']) {
             if (lightAmbient[0] > 0)
                 lightAmbient[0] = lightAmbient[1] = lightAmbient[2] -= 0.05;
-        } else if (keyPressed['2']) {
+        } else if (specialKeyPressed[GLUT_KEY_F2]) {
             if (lightDiffuse[0] < 1)
                 lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] += 0.05;
-        } else if (keyPressed['@']) {
+        } else if (keyPressed['2']) {
             if (lightDiffuse[0] > 0)
                 lightDiffuse[0] = lightDiffuse[1] = lightDiffuse[2] -= 0.05;
-        } else if (keyPressed['3']) {
+        } else if (specialKeyPressed[GLUT_KEY_F3]) {
             if (lightSpecular[0] < 1)
                 lightSpecular[0] = lightSpecular[1] = lightSpecular[2] += 0.05;
-        } else if (keyPressed['#']) {
+        } else if (keyPressed['3']) {
             if (lightSpecular[0] > 0)
                 lightSpecular[0] = lightSpecular[1] = lightSpecular[2] -= 0.05;
         }
@@ -362,20 +415,6 @@ void update() {
     updateCamera();
     updateDoor();
 }
-void square() {
-    glBindTexture(GL_TEXTURE_2D, texture); //bind our texture to our shape
-//    glRotatef(angle, 1.0f, 1.0f, 1.0f);
-    glBegin(GL_QUADS);
-    glTexCoord2d(0.0, 0.0);
-    glVertex2d(-1.0, -1.0); //with our vertices we have to assign a texcoord
-    glTexCoord2d(1.0, 0.0);
-    glVertex2d(+1.0, -1.0); //so that our texture has some points to draw to
-    glTexCoord2d(1.0, 1.0);
-    glVertex2d(+1.0, +1.0);
-    glTexCoord2d(0.0, 1.0);
-    glVertex2d(-1.0, +1.0);
-    glEnd();
-}
 
 void renderScene(int) {
     update();
@@ -408,10 +447,6 @@ void renderScene(int) {
     glEnd();
 
     drawBuilding();
-
-    glEnable(GL_TEXTURE_2D);
-    square();
-    glDisable(GL_TEXTURE_2D);
 
     glFlush();
     glutSwapBuffers();
@@ -496,18 +531,24 @@ void initializeBuilding() {
     // Foundation floor
     building.addRectFace(new Point(-0.3, 2, 0.3), new Point(-0.3, 2, -10.3), new Point(5.3, 2, -10.3),
                          new Point(5.3, 2, 0.3), COLOR_FLOOR);
+    building.getLastFace()->setTextureId(0);
     building.addRectFace(new Point(5.3, 2, -1.5), new Point(5.3, 2, -10.3), new Point(19.7, 2, -10.3),
                          new Point(19.7, 2, -1.5), COLOR_FLOOR);
+    building.getLastFace()->setTextureId(0);
     building.addRectFace(new Point(19.7, 2, 0.3), new Point(19.7, 2, -10.3), new Point(25.3, 2, -10.3),
                          new Point(25.3, 2, 0.3), COLOR_FLOOR);
+    building.getLastFace()->setTextureId(0);
 
     // Second floor
     building.addRectFace(new Point(0.0, 6, 0.0), new Point(0.0, 6, -4.3), new Point(5, 6, -4.3),
-                         new Point(5, 6, 0.0), COLOR_SECOND_FLOOR);
+                         new Point(5, 6, 0.0), COLOR_FLOOR);
+    building.getLastFace()->setTextureId(0);
     building.addRectFace(new Point(5, 6, -1.5), new Point(5, 6, -10), new Point(20, 6, -10),
-                         new Point(20, 6, -1.5), COLOR_SECOND_FLOOR);
+                         new Point(20, 6, -1.5), COLOR_FLOOR);
+    building.getLastFace()->setTextureId(0);
     building.addRectFace(new Point(20, 6, 0.0), new Point(20, 6, -10), new Point(25, 6, -10),
-                         new Point(25, 6, 0.0), COLOR_SECOND_FLOOR);
+                         new Point(25, 6, 0.0), COLOR_FLOOR);
+    building.getLastFace()->setTextureId(1);
 
     // External stairs
     building.addRectFace(new Point(8, 2, 0), new Point(17, 2, 0), new Point(17, 2, 0.35),
@@ -619,6 +660,7 @@ void initializeBuilding() {
     // Entrance floor
     building.addRectFace(new Point(8, 2, -1.5), new Point(8, 2, 0), new Point(17, 2, 0),
                          new Point(17, 2, -1.5), COLOR_FLOOR);
+    building.getLastFace()->setTextureId(0);
 
     // External Walls
     building.addRectFace(new Point(20, 2, -1.5), new Point(20, 10, -1.5), new Point(20, 10, 0),
@@ -637,9 +679,8 @@ void initializeBuilding() {
                          new Point(20, 2, -1.5), COLOR_EXTERNAL_WALL);
 
     // Internal second floor wall
-    building.addRectFace(new Point(20, 6.0, 0), new Point(20, 6.0, -10), new Point(20, 10, -10),
-                         new Point(20, 10, 0),
-                         COLOR_EXTERNAL_WALL_2);
+    building.addRectFace(new Point(20, 6.0, -1.5), new Point(20, 6.0, -10), new Point(20, 10, -10),
+                         new Point(20, 10, -1.5), COLOR_EXTERNAL_WALL_2);
 
     // Static front windows
     building.addCube(new Point(1.75, 2.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);

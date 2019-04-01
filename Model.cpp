@@ -69,3 +69,7 @@ void Model::translate(float x, float y, float z) {
     this->y += y;
     this->z += z;
 }
+
+Face *Model::getLastFace() {
+    return this->faces[this->faces.size() - 1];
+}

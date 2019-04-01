@@ -2,7 +2,7 @@
 #define HISTORIC_CENTER_TEXTURE_H
 
 
-GLuint LoadTexture(const char *filename, int width, int height) {
+GLuint loadTexture(const char *filename, int width, int height) {
     GLuint texture;
     unsigned char *data;
     FILE *file;

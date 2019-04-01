@@ -12,10 +12,14 @@ class Face {
 public:
     vector<Point*> points;
     Color* color;
+    float xDiff, yDiff, zDiff;
+    int texture_id = -1, texDir;
+
+    bool debug = false;
 
     Face(int vertices, Point* points[], Color* color);
 
-    void setColor(Color* color);
+    void setTextureId(int id);
 };
 
 #endif //HISTORIC_CENTER_FACE_H
