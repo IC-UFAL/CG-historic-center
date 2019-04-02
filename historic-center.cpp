@@ -37,7 +37,7 @@ void initializeBuilding();
 static unsigned int redisplay_interval = 1000 / 60;
 static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
 
-Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.1, 0.01);
+Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.1, 0.02);
 Model building, doors, fancyTable, bigTable, chair, fancyChair, fancyCouch;
 Point *fancyChairSeats[2][4] = {
         {new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85), new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15)},
@@ -78,7 +78,7 @@ void light() {
     glLightfv(GL_LIGHT0, GL_POSITION, lightPosition);
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, whiteMaterial);
     glPushMatrix();
-    glTranslatef(lightPosition[0] - 5, lightPosition[1], lightPosition[2]);
+    glTranslatef(lightPosition[0], lightPosition[1], lightPosition[2]);
     glColor3f(1, 1, 1);
     glutSolidSphere(0.1, 100, 100);
     glPopMatrix();
@@ -91,17 +91,24 @@ void init() {
 
     initializeBuilding();
 
-    textures[0] = loadTexture("textures/main_floor.bmp", 512, 512);
-    textures[1] = loadTexture("textures/chess_floor.bmp", 1104, 1104);
+    textures[0] = loadTexture("../textures/main_floor.bmp", 512, 512);
+    textures[1] = loadTexture("../textures/chess_floor.bmp", 1104, 1104);
+    textures[2] = loadTexture("../textures/fancy_couch_pad.bmp", 512, 512);
+    textures[3] = loadTexture("../textures/main_wall.bmp", 256, 256);
+    textures[4] = loadTexture("../textures/concrete_stair_top.bmp", 512, 512);
+    textures[5] = loadTexture("../textures/concrete_stair_side.bmp", 512, 512);
+    textures[6] = loadTexture("../textures/facade_name.bmp", 1024, 103);
+    textures[7] = loadTexture("../textures/entrance_ceiling.bmp", 1024, 235);
+    textures[8] = loadTexture("../textures/facade_side.bmp", 500, 800);
 }
 
 void drawCube(Point *p, float width, float height, float depth, Point *rotationPoint, float angle, int rotationAxis[3],
               Color *color) {
     glPushMatrix();
     glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
-    glTranslatef(GLfloat(p->x), GLfloat(p->y), GLfloat(p->z));
+    glTranslatef(p->x, p->y, p->z);
     glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
-    glTranslatef(GLfloat(rotationPoint->x), GLfloat(rotationPoint->y), GLfloat(rotationPoint->z));
+    glTranslatef(rotationPoint->x, rotationPoint->y, rotationPoint->z);
     glScalef(width, height, depth);
     glutSolidCube(1.0);
     glPopMatrix();
@@ -109,7 +116,7 @@ void drawCube(Point *p, float width, float height, float depth, Point *rotationP
 
 void drawCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotationAxis[3], Color *color) {
     glPushMatrix();
-    glTranslatef(GLfloat(pos->x), GLfloat(pos->y), GLfloat(pos->z));
+    glTranslatef(pos->x, pos->y, pos->z);
     glColor3f(GLfloat(color->R), GLfloat(color->G), GLfloat(color->B));
     glRotatef(rotAngle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
     gluCylinder(gluNewQuadric(), base, top, height, 50, 50);
@@ -122,9 +129,8 @@ void drawModel(const Model &model) {
             glEnable(GL_TEXTURE_2D);
 
         if (face->debug)
-            printf("xDiff: %f, yDiff: %f, zDiff: %f, points: %d\n", face->xDiff, face->yDiff, face->zDiff,
-                   face->points.size());
-
+            printf("xDiff: %f, yDiff: %f, zDiff: %f, points: %llu, texDir: %d\n", face->xDiff, face->yDiff, face->zDiff,
+                   face->points.size(), face->texDir);
 
 
         float xTexScale, yTexScale;
@@ -144,7 +150,10 @@ void drawModel(const Model &model) {
             xTexScale = yTexScale;
             yTexScale = aux;
         }
-        
+
+        xTexScale *= 1 / face->texScaleX;
+        yTexScale *= 1 / face->texScaleY;
+
         if (face->debug)
             printf("xScale: %f, yScale: %f\n", xTexScale, yTexScale);
 
@@ -157,16 +166,22 @@ void drawModel(const Model &model) {
             glNormal3d(point->x, point->y, point->z);
 
             float xTex = i, yTex = i;
-            if (face->points.size() == 3) {
-                xTex = i / 2.0;
-                yTex = i == 1 ? 1 : 0;
-            } else if (face->points.size() == 4) {
-                xTex = i < 2 ? 0 : 1;
-                yTex = i == 0 || i == 3 ? 0 : 1;
+            if (face->hasTexPoints) {
+                xTex = face->texPoints[i]->x;
+                yTex = face->texPoints[i]->y;
+            } else {
+                if (face->points.size() == 3) {
+                    xTex = i / 2.0f;
+                    yTex = i == 1 ? 1 : 0;
+                } else if (face->points.size() == 4) {
+                    xTex = i < 2 ? 0 : 1;
+                    xTex += 0.05;
+                    yTex = i == 0 || i == 3 ? 0 : 1;
+                }
             }
 
             glTexCoord2d(xTex * xTexScale, yTex * yTexScale);
-            glVertex3f(GLfloat(point->x), GLfloat(point->y), GLfloat(point->z));
+            glVertex3f(point->x, point->y, point->z);
             i++;
         }
         glEnd();
@@ -219,7 +234,7 @@ void drawChair(float x, float y, float z) {
 }
 
 void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3], float scaleX, float scaleY, float scaleZ,
-                    Color *color) {
+                    Color *color, int texture_id) {
     Model seats;
 
     glPushMatrix();
@@ -231,10 +246,12 @@ void drawFancyChair(float x, float y, float z, float rotAngle, int rotAxis[3], f
     // Fancy seat
     seats.addRectFace(fancyChairSeats[0][0], fancyChairSeats[0][1], fancyChairSeats[0][2], fancyChairSeats[0][3],
                       color);
+    seats.getLastFace()->setTexture(texture_id);
 
     // Fancy Backrest
     seats.addRectFace(fancyChairSeats[1][0], fancyChairSeats[1][1], fancyChairSeats[1][2], fancyChairSeats[1][3],
                       color);
+    seats.getLastFace()->setTexture(texture_id);
     drawModel(seats);
 
     glPopMatrix();
@@ -291,14 +308,14 @@ void drawBuilding() {
     drawChair(7.8, 6, -9);
 
     // fancy chairs
-    drawFancyChair(14.8, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
-    drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
-    drawFancyChair(10.6, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD);
+    drawFancyChair(14.8, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD, 0);
+    drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD, 0);
+    drawFancyChair(10.6, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD, 0);
 
-    drawFancyChair(22.8, 6, -6.5f, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(23.2, 6, -3.2f, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(24.1, 6, -5.1f, -90.0f, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
-    drawFancyChair(22, 6, -4.9f, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD);
+    drawFancyChair(22.8, 6, -6.5f, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
+    drawFancyChair(23.2, 6, -3.2f, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
+    drawFancyChair(24.1, 6, -5.1f, -90.0f, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
+    drawFancyChair(22, 6, -4.9f, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
 
     glPopMatrix();
 }
@@ -531,43 +548,67 @@ void initializeBuilding() {
     // Foundation floor
     building.addRectFace(new Point(-0.3, 2, 0.3), new Point(-0.3, 2, -10.3), new Point(5.3, 2, -10.3),
                          new Point(5.3, 2, 0.3), COLOR_FLOOR);
-    building.getLastFace()->setTextureId(0);
+    building.getLastFace()->setTexture(0);
     building.addRectFace(new Point(5.3, 2, -1.5), new Point(5.3, 2, -10.3), new Point(19.7, 2, -10.3),
                          new Point(19.7, 2, -1.5), COLOR_FLOOR);
-    building.getLastFace()->setTextureId(0);
+    building.getLastFace()->setTexture(0);
     building.addRectFace(new Point(19.7, 2, 0.3), new Point(19.7, 2, -10.3), new Point(25.3, 2, -10.3),
                          new Point(25.3, 2, 0.3), COLOR_FLOOR);
-    building.getLastFace()->setTextureId(0);
+    building.getLastFace()->setTexture(0);
 
     // Second floor
     building.addRectFace(new Point(0.0, 6, 0.0), new Point(0.0, 6, -4.3), new Point(5, 6, -4.3),
                          new Point(5, 6, 0.0), COLOR_FLOOR);
-    building.getLastFace()->setTextureId(0);
+    building.getLastFace()->setTexture(0);
     building.addRectFace(new Point(5, 6, -1.5), new Point(5, 6, -10), new Point(20, 6, -10),
                          new Point(20, 6, -1.5), COLOR_FLOOR);
-    building.getLastFace()->setTextureId(0);
+    building.getLastFace()->setTexture(0);
     building.addRectFace(new Point(20, 6, 0.0), new Point(20, 6, -10), new Point(25, 6, -10),
                          new Point(25, 6, 0.0), COLOR_FLOOR);
-    building.getLastFace()->setTextureId(1);
+    building.getLastFace()->setTexture(1);
+
+    // First floor internal ceiling
+    building.addRectFace(new Point(0.0, 5.99, 0.0), new Point(0.0, 5.99, -4.3), new Point(5, 5.99, -4.3),
+                         new Point(5, 5.99, 0.0), COLOR_FLOOR);
+    building.addRectFace(new Point(5, 5.99, -1.5), new Point(5, 5.99, -10), new Point(20, 5.99, -10),
+                         new Point(20, 5.99, -1.5), COLOR_FLOOR);
+    building.addRectFace(new Point(20, 5.99, 0.0), new Point(20, 5.99, -10), new Point(25, 5.99, -10),
+                         new Point(25, 5.99, 0.0), COLOR_FLOOR);
 
     // External stairs
     building.addRectFace(new Point(8, 2, 0), new Point(17, 2, 0), new Point(17, 2, 0.35),
                          new Point(8, 2, 0.35), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 1.75, 0.35), new Point(8, 1.75, 0.35), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
     building.addRectFace(new Point(17, 1.75, 0.7), new Point(8, 1.75, 0.7), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 1.5, 0.7), new Point(8, 1.5, 0.7), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
     building.addRectFace(new Point(17, 1.5, 1.05), new Point(8, 1.5, 1.05), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 1.25, 1.05), new Point(8, 1.25, 1.05), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
     building.addRectFace(new Point(17, 1.25, 1.4), new Point(8, 1.25, 1.4), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 1.0, 1.4), new Point(8, 1.0, 1.4), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
     building.addRectFace(new Point(17, 1.0, 2.1), new Point(8, 1.0, 2.1), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 0.75, 2.1), new Point(8, 0.75, 2.1), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
     building.addRectFace(new Point(17, 0.75, 2.45), new Point(8, 0.75, 2.45), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 0.5, 2.45), new Point(8, 0.5, 2.45), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
     building.addRectFace(new Point(17, 0.5, 2.8), new Point(8, 0.5, 2.8), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 0.25, 2.8), new Point(8, 0.25, 2.8), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
     building.addRectFace(new Point(17, 0.25, 3.05), new Point(8, 0.25, 3.05), COLOR_STAIRS_TOP);
+    building.getLastFace()->setTexture(4);
     building.addRectFace(new Point(17, 0.0, 3.05), new Point(8, 0.0, 3.05), COLOR_STAIRS_FRONT);
+    building.getLastFace()->setTexture(5);
 
     // Internal stairs
     building.addRectFace(new Point(3.8, 2, -7), new Point(3.8, 2, -10), new Point(3.8, 2.25, -10),
@@ -660,27 +701,37 @@ void initializeBuilding() {
     // Entrance floor
     building.addRectFace(new Point(8, 2, -1.5), new Point(8, 2, 0), new Point(17, 2, 0),
                          new Point(17, 2, -1.5), COLOR_FLOOR);
-    building.getLastFace()->setTextureId(0);
+    building.getLastFace()->setTexture(0);
 
     // External Walls
     building.addRectFace(new Point(20, 2, -1.5), new Point(20, 10, -1.5), new Point(20, 10, 0),
-                         new Point(20, 2, 0),
-                         COLOR_EXTERNAL_WALL_2);
+                         new Point(20, 2, 0), COLOR_EXTERNAL_WALL_2);
+    building.getLastFace()->setTexture(3);
     building.addRectFace(new Point(25, 10, 0), new Point(25, 2, 0), COLOR_EXTERNAL_WALL);
+    building.getLastFace()->setTexture(8, 5, 8);
     building.addRectFace(new Point(25, 10, -10), new Point(25, 2, -10), COLOR_EXTERNAL_WALL_2);
+    building.getLastFace()->setTexture(3);
     building.addRectFace(new Point(0, 10, -10), new Point(0, 2, -10), COLOR_EXTERNAL_WALL);
+    building.getLastFace()->setTexture(3);
     building.addRectFace(new Point(0, 10, 0), new Point(0, 2, 0), COLOR_EXTERNAL_WALL_2);
+    building.getLastFace()->setTexture(3);
     building.addRectFace(new Point(5, 10, 0), new Point(5, 2, 0), COLOR_EXTERNAL_WALL);
+    building.getLastFace()->setTexture(8, 5, 8);
     building.addRectFace(new Point(5, 10, -1.5), new Point(5, 2, -1.5), COLOR_EXTERNAL_WALL_2);
+    building.getLastFace()->setTexture(3);
     building.addRectFace(new Point(11.5, 10, -1.5), new Point(11.5, 2, -1.5), COLOR_EXTERNAL_WALL);
+    building.getLastFace()->setTexture(3);
     building.addRectFace(new Point(11.5, 5, -1.5), new Point(11.5, 10, -1.5), new Point(13.5, 10, -1.5),
                          new Point(13.5, 5, -1.5), COLOR_EXTERNAL_WALL_2);
+    building.getLastFace()->setTexture(3);
     building.addRectFace(new Point(13.5, 2, -1.5), new Point(13.5, 10, -1.5), new Point(20, 10, -1.5),
                          new Point(20, 2, -1.5), COLOR_EXTERNAL_WALL);
+    building.getLastFace()->setTexture(3);
 
     // Internal second floor wall
     building.addRectFace(new Point(20, 6.0, -1.5), new Point(20, 6.0, -10), new Point(20, 10, -10),
                          new Point(20, 10, -1.5), COLOR_EXTERNAL_WALL_2);
+    building.getLastFace()->setTexture(3);
 
     // Static front windows
     building.addCube(new Point(1.75, 2.5, -0.05), 1.5, 2.5, 0.1, COLOR_STATIC_WINDOW);
@@ -725,6 +776,7 @@ void initializeBuilding() {
     // Ceiling facade
     building.addRectFace(new Point(8, 10, 0.75), new Point(8, 11, 0.75), new Point(17, 11, 0.75),
                          new Point(17, 10, 0.75), COLOR_PILLAR_BASE);
+    building.getLastFace()->setTexture(6, 9, 1);
     building.addRectFace(new Point(17, 11, -1.5), new Point(17, 10, -1.5), COLOR_PILLAR_BASE);
     building.addRectFace(new Point(19.5, 11, -1.5), new Point(20, 10, -1.5), COLOR_EXTERNAL_DETAILS);
     building.addRectFace(new Point(19.5, 11, 0.5), new Point(20, 10, 0), COLOR_EXTERNAL_DETAILS);
@@ -738,6 +790,7 @@ void initializeBuilding() {
     building.addRectFace(new Point(8, 11, 0.75), new Point(8, 10, 0.75), COLOR_PILLAR_BASE);
     building.addRectFace(new Point(8, 10, 0.75), new Point(8, 10, -1.5), new Point(17, 10, -1.5),
                          new Point(17, 10, 0.75), COLOR_EXTERNAL_DETAILS);
+    building.getLastFace()->setTexture(7, 8.5, 2);
 
     // Ceiling
     building.addCube(new Point(7.5, 11, -1.5), 10, 0.15, 3, COLOR_EXTERNAL_WALL);
@@ -952,7 +1005,7 @@ void initializeBuilding() {
     fancyChair.addCube(new Point(-0.1, 0.8, 0.8), 0.05, 0.35, 0.05, COLOR_TABLE_TOP_SIDE);
     fancyChair.addCube(new Point(0.65, 0.8, 0.8), 0.05, 0.35, 0.05, COLOR_TABLE_TOP_SIDE);
 
-    ///-------------------------------------------- Fancy Table -----------------------------------------------------///
+    ///-------------------------------------------- Fancy Couch -----------------------------------------------------///
     // Feet
     fancyCouch.addCube(new Point(), 0.1, 0.15, 0.1, COLOR_COUCH_FOOT);
     fancyCouch.addCube(new Point(0.5, 0, 0), 0.1, 0.15, 0.1, COLOR_COUCH_FOOT);
@@ -970,14 +1023,18 @@ void initializeBuilding() {
     fancyCouch.addCube(new Point(0, 0.15, 0), 0.1, 0.35, 0.5, COLOR_COUCH_WOOD);
     fancyCouch.addRectFace(new Point(-0.01, 0.17, 0.02), new Point(-0.01, 0.48, 0.02), new Point(-0.01, 0.48, 0.48),
                            new Point(-0.01, 0.17, 0.48), COLOR_COUCH_PAD);
+    fancyCouch.getLastFace()->setTexture(2, 0.5, 0.5);
     fancyCouch.addRectFace(new Point(0.11, 0.15, 0.02), new Point(0.11, 0.48, 0.02), new Point(0.11, 0.48, 0.48),
                            new Point(0.11, 0.15, 0.48), COLOR_COUCH_PAD);
+    fancyCouch.getLastFace()->setTexture(2, 0.5, 0.5);
 
     fancyCouch.addCube(new Point(1.9, 0.15, 0), 0.1, 0.35, 0.5, COLOR_COUCH_WOOD);
     fancyCouch.addRectFace(new Point(1.89, 0.15, 0.02), new Point(1.89, 0.48, 0.02), new Point(1.89, 0.48, 0.48),
                            new Point(1.89, 0.15, 0.48), COLOR_COUCH_PAD);
+    fancyCouch.getLastFace()->setTexture(2, 0.5, 0.5);
     fancyCouch.addRectFace(new Point(2.01, 0.15, 0.02), new Point(2.01, 0.48, 0.02), new Point(2.01, 0.48, 0.48),
                            new Point(2.01, 0.15, 0.48), COLOR_COUCH_PAD);
+    fancyCouch.getLastFace()->setTexture(2, 0.5, 0.5);
 
     // Golden details
     fancyCouch.addRectFace(new Point(0.1, 0.5, 0.51), new Point(0.1, 0.4, 0.51), new Point(0, 0.4, 0.51),
@@ -986,14 +1043,23 @@ void initializeBuilding() {
                            new Point(1.9, 0.5, 0.51), COLOR_TABLE_GOLD);
 
     // Back
-    Point *points[] = {new Point(0, 0.15, 0), new Point(0, 0.65, 0), new Point(0.3, 0.65, 0), new Point(0.75, 0.9, 0),
-                       new Point(1.25, 0.9, 0), new Point(1.7, 0.65, 0), new Point(2, 0.65, 0), new Point(2, 0.15, 0)};
+    Point *points[] = {
+            new Point(0, 0.15, 0), new Point(0, 0.65, 0), new Point(0.3, 0.65, 0), new Point(0.75, 0.9, 0),
+            new Point(1.25, 0.9, 0), new Point(1.7, 0.65, 0), new Point(2, 0.65, 0), new Point(2, 0.15, 0)
+    },
+            *texPoints[] = {
+            new Point(0, 0), new Point(0, 0.66), new Point(0.15, 0.66), new Point(0.375, 1), new Point(0.625, 1),
+            new Point(0.85, 0.66), new Point(1, 0.66), new Point(1, 0)
+    };
+
     fancyCouch.addFace(new Face(8, points, COLOR_COUCH_WOOD));
 
     Point *points2[] = {new Point(0.05, 0.15, 0.01), new Point(0.05, 0.6, 0.01), new Point(0.3, 0.60, 0.01),
                         new Point(0.75, 0.85, 0.01), new Point(1.25, 0.85, 0.01), new Point(1.7, 0.60, 0.01),
                         new Point(1.95, 0.6, 0.01), new Point(1.95, 0.15, 0.01)};
     fancyCouch.addFace(new Face(8, points2, COLOR_COUCH_PAD));
+    fancyCouch.getLastFace()->setTexturePoints(texPoints);
+    fancyCouch.getLastFace()->setTexture(2, 0.5, 0.5);
 
     // Seat
     fancyCouch.addCube(new Point(0.1, 0.25, 0.01), 1.8, 0.07, 0.49, COLOR_COUCH_PAD_SEAT);

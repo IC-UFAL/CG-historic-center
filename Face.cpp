@@ -5,7 +5,7 @@
 #include "Face.h"
 
 Face::Face(int vertices, Point* points[], Color* color) {
-    double xMin = FLT_MAX, xMax = -FLT_MAX, yMin = FLT_MAX, yMax = -FLT_MAX, zMin = FLT_MAX, zMax = -FLT_MAX;
+    float xMin = FLT_MAX, xMax = -FLT_MAX, yMin = FLT_MAX, yMax = -FLT_MAX, zMin = FLT_MAX, zMax = -FLT_MAX;
     for (int i = 0; i < vertices; i++) {
         this->points.push_back(points[i]);
 
@@ -38,6 +38,21 @@ Face::Face(int vertices, Point* points[], Color* color) {
     }
 }
 
-void Face::setTextureId(int id) {
+void Face::setTexturePoints(Point *points[]) {
+    this->hasTexPoints = true;
+
+    int v = static_cast<int>(this->points.size());
+    for (int i = 0; i < v; i++) {
+        this->texPoints.push_back(points[i]);
+    }
+}
+
+void Face::setTexture(int id, float texScaleX, float texScaleY) {
+    this->texture_id = id;
+    this->texScaleX = texScaleX;
+    this->texScaleY = texScaleY;
+}
+
+void Face::setTexture(int id) {
     this->texture_id = id;
 }

@@ -10,16 +10,20 @@ using namespace std;
 
 class Face {
 public:
-    vector<Point*> points;
-    Color* color;
-    float xDiff, yDiff, zDiff;
+    vector<Point *> points, texPoints;
+    Color *color;
+    float xDiff, yDiff, zDiff, texScaleX = 1, texScaleY = 1;
     int texture_id = -1, texDir;
 
-    bool debug = false;
+    bool hasTexPoints = false, debug = false;
 
-    Face(int vertices, Point* points[], Color* color);
+    Face(int vertices, Point *points[], Color *color);
 
-    void setTextureId(int id);
+    void setTexturePoints(Point *points[]);
+
+    void setTexture(int id, float texScaleX, float texScaleY);
+
+    void setTexture(int id);
 };
 
 #endif //HISTORIC_CENTER_FACE_H
