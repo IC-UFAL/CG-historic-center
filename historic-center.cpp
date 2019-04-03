@@ -34,11 +34,13 @@
 
 void initializeBuilding();
 
+void checkSpecMode();
+
 static unsigned int redisplay_interval = 1000 / 60;
 static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
 
 Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.1, 0.02);
-Model building, doors, fancyTable, bigTable, chair, fancyChair, fancyCouch;
+Model building, doors, fancyTable, bigTable, chair, fancyChair, fancyCouch, ceiling;
 Point *fancyChairSeats[2][4] = {
         {new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85), new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15)},
         {new Point(0, 1, 0.08),    new Point(0.6, 1, 0.08),  new Point(0.6, 1.9, 0.08),  new Point(0.0, 1.9, 0.08)}
@@ -46,11 +48,15 @@ Point *fancyChairSeats[2][4] = {
 GLuint textures[256];
 
 float door_angle = 0.0f;
-bool keyPressed[256], specialKeyPressed[256], enableLight = true;
+bool keyPressed[256], specialKeyPressed[256], enableLight = true, showCeiling = true;
 GLfloat lightPosition[] = {12.5, 10, 20, 1};
 GLfloat lightAmbient[] = {0.5, 0.5, 0.5};
 GLfloat lightDiffuse[] = {0.3, 0.3, 0.3};
 GLfloat lightSpecular[] = {0, 0, 0};
+
+int specMode = 0;
+
+float firstFloorHeight = 2, secondFloorHeight = 6;
 
 void setupLight() {
 //    glEnable(GL_NORMALIZE);
@@ -278,6 +284,7 @@ void drawDoors() {
 void drawFancyTable(float x, float y, float z) {
     glPushMatrix();
     glTranslatef(x, y, z);
+    glScalef(1.2, 1, 1.2);
     drawModel(fancyTable);
     glPopMatrix();
 }
@@ -285,6 +292,7 @@ void drawFancyTable(float x, float y, float z) {
 void drawBigTable(float x, float y, float z) {
     glPushMatrix();
     glTranslatef(x, y, z);
+    glScalef(0.8, 0.8, 0.8);
     drawModel(bigTable);
     glPopMatrix();
 }
@@ -292,7 +300,7 @@ void drawBigTable(float x, float y, float z) {
 void drawChair(float x, float y, float z) {
     glPushMatrix();
     glTranslatef(x, y, z);
-    glScalef(0.8, 0.8, 0.8);
+    glScalef(0.6, 0.6, 0.6);
     drawModel(chair);
     glPopMatrix();
 }
@@ -325,7 +333,7 @@ void drawFancyCouch(float x, float y, float z, int rotationAxis[], float angle) 
     glPushMatrix();
     glTranslatef(x, y, z);
     glRotatef(angle, rotationAxis[0], rotationAxis[1], rotationAxis[2]);
-    glScalef(1.2, 1.2, 1.2);
+    glScalef(1.5, 1.5, 1.5);
     drawModel(fancyCouch);
     glPopMatrix();
 }
@@ -335,26 +343,30 @@ void drawBuilding() {
     glTranslatef(building.x, building.y, building.z);
 
     drawModel(building);
+
+    if (showCeiling)
+        drawModel(ceiling);
+
     drawDoors();
-    drawFancyTable(22.5, 6.01, -6);
-    drawFancyCouch(20.1, 6.01, -7.5f, axisY, 90);
-    drawBigTable(16, 6, -2.5f);
+    drawFancyTable(22.4, 6.01, -5);
+    drawFancyCouch(20.1, 6.01, -6.8f, axisY, 90);
+    drawBigTable(15.4f, 6, -2.5f);
 
     // simple chairs
-    drawChair(16.5, 6, -7);
-    drawChair(15.8, 6, -7);
-    drawChair(15.1, 6, -7);
-    drawChair(14.4, 6, -7);
+    drawChair(16.5, 6, -8);
+    drawChair(15.8, 6, -8);
+    drawChair(15.1, 6, -8);
+    drawChair(14.4, 6, -8);
 
-    drawChair(13.2, 6, -7);
-    drawChair(12.5, 6, -7);
-    drawChair(11.8, 6, -7);
-    drawChair(11.1, 6, -7);
+    drawChair(13.2, 6, -8);
+    drawChair(12.5, 6, -8);
+    drawChair(11.8, 6, -8);
+    drawChair(11.1, 6, -8);
 
-    drawChair(9.9, 6, -7);
-    drawChair(9.2, 6, -7);
-    drawChair(8.5, 6, -7);
-    drawChair(7.8, 6, -7);
+    drawChair(9.9, 6, -8);
+    drawChair(9.2, 6, -8);
+    drawChair(8.5, 6, -8);
+    drawChair(7.8, 6, -8);
 
     drawChair(16.5, 6, -9);
     drawChair(15.8, 6, -9);
@@ -372,14 +384,14 @@ void drawBuilding() {
     drawChair(7.8, 6, -9);
 
     // fancy chairs
-    drawFancyChair(14.8, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD, 15);
-    drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD, 15);
-    drawFancyChair(10.6, 6, -2, 180.0, axisY, 1, 1, 1, COLOR_CHAIR_WOOD, 15);
+    drawFancyChair(14.8, 6, -2, 180.0, axisY, 0.8, 0.8, 0.8, COLOR_CHAIR_WOOD, 15);
+    drawFancyChair(12.8, 6.3, -2, 180.0, axisY, 0.8, 0.8, 0.8, COLOR_CHAIR_WOOD, 15);
+    drawFancyChair(10.6, 6, -2, 180.0, axisY, 0.8, 0.8, 0.8, COLOR_CHAIR_WOOD, 15);
 
-    drawFancyChair(22.8, 6, -6.5f, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
-    drawFancyChair(23.2, 6, -3.2f, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
-    drawFancyChair(24.1, 6, -5.1f, -90.0f, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
-    drawFancyChair(22, 6, -4.9f, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
+    drawFancyChair(22.8, 6, -5.3f, 0.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
+    drawFancyChair(23.2, 6, -2.1f, 180.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
+    drawFancyChair(24.1, 6, -4.2f, -90.0f, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
+    drawFancyChair(22, 6, -3.3f, 90.0, axisY, 0.7, 0.7, 0.7, COLOR_COUCH_PAD, 2);
 
     glPopMatrix();
 }
@@ -463,10 +475,12 @@ void updateCamera() {
             cam->moveRight();
         }
         if (keyPressed[' ']) {
-            cam->moveUp();
+            if (specMode == 0)
+                cam->moveUp();
         }
         if (specialKeyPressed[GLUT_KEY_SHIFT]) {
-            cam->moveDown();
+            if (specMode == 0)
+                cam->moveDown();
         }
         if (specialKeyPressed[GLUT_KEY_LEFT]) {
             cam->lookLeft();
@@ -538,21 +552,43 @@ void renderScene() {
     renderScene(0);
 }
 
-void keyboardHandler(unsigned char key, int x, int y) {
+void checkSpecMode() {
+    if (specMode == 1) {
+        cam->position.y = firstFloorHeight + 1.8f;
+    } else if (specMode == 2) {
+        cam->position.y = secondFloorHeight + 1.8f;
+    }
+}
+
+void keyboardHandler(unsigned char key, int, int) {
     keyPressed[tolower(key)] = true;
 
+        printf("%d\n", key);
     if (key == 27)
         exit(0);
-    if (key == 13) {
+    else if (key == 13) {
         enableLight = !enableLight;
         if (enableLight)
             glEnable(GL_LIGHTING);
         else
             glDisable(GL_LIGHTING);
+    } else if (key == 9) {
+        specMode = !specMode;
+
+        checkSpecMode();
+    } else if (key == ' ' && specMode != 0) {
+        if (specMode == 1)
+            specMode = 2;
+        else if (specMode == 2)
+            specMode = 1;
+
+        checkSpecMode();
+    } else if (tolower(key) == 'c') {
+        showCeiling = !showCeiling;
     }
 }
 
-void keyboardUpHandler(unsigned char key, int x, int y) {
+void keyboardUpHandler(unsigned char key, int, int) {
     keyPressed[tolower(key)] = false;
     if (key == 'q' && cam->speed > 0.03) {
         cam->speed -= 0.01;
@@ -562,11 +598,11 @@ void keyboardUpHandler(unsigned char key, int x, int y) {
     }
 }
 
-void specialFuncHandler(int key, int x, int y) {
+void specialFuncHandler(int key, int, int) {
     specialKeyPressed[key] = true;
 }
 
-void specialFuncUpHandler(int key, int x, int y) {
+void specialFuncUpHandler(int key, int, int) {
     specialKeyPressed[key] = false;
 }
 
@@ -648,12 +684,12 @@ void initializeBuilding() {
                          new Point(25, 5.99, 0.0), COLOR_FLOOR);
 
     // Second floor internal ceiling
-//    building.addRectFace(new Point(0.0, 9.99, 0.0), new Point(0.0, 9.99, -10), new Point(5, 9.99, -10),
-//                         new Point(5, 9.99, 0.0), COLOR_FLOOR);
-//    building.addRectFace(new Point(5, 9.99, -1.5), new Point(5, 9.99, -10), new Point(20, 9.99, -10),
-//                         new Point(20, 9.99, -1.5), COLOR_FLOOR);
-//    building.addRectFace(new Point(20, 9.99, 0.0), new Point(20, 9.99, -10), new Point(25, 9.99, -10),
-//                         new Point(25, 9.99, 0.0), COLOR_FLOOR);
+    ceiling.addRectFace(new Point(0.0, 9.99, 0.0), new Point(0.0, 9.99, -10), new Point(5, 9.99, -10),
+                         new Point(5, 9.99, 0.0), COLOR_FLOOR);
+    ceiling.addRectFace(new Point(5, 9.99, -1.5), new Point(5, 9.99, -10), new Point(20, 9.99, -10),
+                         new Point(20, 9.99, -1.5), COLOR_FLOOR);
+    ceiling.addRectFace(new Point(20, 9.99, 0.0), new Point(20, 9.99, -10), new Point(25, 9.99, -10),
+                         new Point(25, 9.99, 0.0), COLOR_FLOOR);
 
     // External stairs
     building.addRectFace(new Point(8, 2, 0), new Point(17, 2, 0), new Point(17, 2, 0.35),
@@ -765,10 +801,11 @@ void initializeBuilding() {
     building.addCube(new Point(10.5, 0, -0.5), 1, 2.5, 1, COLOR_PILLAR_BASE, 3);
     building.addCube(new Point(13.5, 0, -0.5), 1, 2.5, 1, COLOR_PILLAR_BASE, 3);
     building.addCube(new Point(16.5, 0, -0.5), 1, 2.5, 1, COLOR_PILLAR_BASE, 3);
-    building.addCube(new Point(7.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE, 3);
-    building.addCube(new Point(10.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE, 3);
-    building.addCube(new Point(13.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE, 3);
-    building.addCube(new Point(16.5, 0.3, -5.5), 1, 2.5, 1, COLOR_PILLAR_BASE, 3);
+
+    building.addCube(new Point(7.7, 0.3, -5.3), 0.6, 2.3, 0.6, COLOR_PILLAR_BASE, 3);
+    building.addCube(new Point(10.7, 0.3, -5.3), 0.6, 2.3, 0.6, COLOR_PILLAR_BASE, 3);
+    building.addCube(new Point(13.7, 0.3, -5.3), 0.6, 2.3, 0.6, COLOR_PILLAR_BASE, 3);
+    building.addCube(new Point(16.7, 0.3, -5.3), 0.6, 2.3, 0.6, COLOR_PILLAR_BASE, 3);
 
     // Pillars top
     building.addCube(new Point(7.5, 9.497, -0.5), 1, 0.5, 1, COLOR_PILLAR_BASE, 3);
@@ -783,10 +820,10 @@ void initializeBuilding() {
     building.addCylinder(new Point(17.0, 2.0, 0.0), 0.4, 0.4, 8.0, -90.0f, axisX, COLOR_PILLAR);
 
     // Internal pillars
-    building.addCylinder(new Point(11.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(14.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(8.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
-    building.addCylinder(new Point(17.0, 2.0, -5.0), 0.4, 0.4, 4.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(11.0, 2.0, -5.0), 0.2, 0.2, 4.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(14.0, 2.0, -5.0), 0.2, 0.2, 4.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(8.0, 2.0, -5.0), 0.2, 0.2, 4.0, -90.0f, axisX, COLOR_PILLAR);
+    building.addCylinder(new Point(17.0, 2.0, -5.0), 0.2, 0.2, 4.0, -90.0f, axisX, COLOR_PILLAR);
 
     // Handrail flaps
     building.addRectFace(new Point(7.85, 0, 2.5), new Point(7.85, 0, 0.5), new Point(7.85, 2.3, 0.5),
