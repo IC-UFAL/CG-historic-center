@@ -39,7 +39,7 @@ void checkSpecMode();
 static unsigned int redisplay_interval = 1000 / 60;
 static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
 
-Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.1, 0.02);
+Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.03, 0.005);
 Model building, doors, fancyTable, bigTable, chair, fancyChair, fancyCouch, ceiling;
 Point *fancyChairSeats[2][4] = {
         {new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85), new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15)},
@@ -120,8 +120,8 @@ void init() {
     textures[20] = loadTexture("../textures/window.bmp", 300, 500);
     textures[21] = loadTexture("../textures/window_slim.bmp", 180, 500);
     textures[22] = loadTexture("../textures/door.bmp", 500, 750);
-    textures[23] = loadTexture("../textures/door_left.bmp", 250, 750);
-    textures[24] = loadTexture("../textures/door_right.bmp", 250, 750);
+    textures[23] = loadTexture("../textures/door_left.bmp", 256, 768);
+    textures[24] = loadTexture("../textures/door_right.bmp", 256, 768);
     textures[25] = loadTexture("../textures/wood.bmp", 280, 280);
     textures[26] = loadTexture("../textures/clear_wood.bmp", 1000, 1000);
 }
@@ -500,10 +500,10 @@ void updateCamera() {
 void updateDoor() {
     if (keyPressed['o'])
         if (door_angle <= 118.0f)
-            door_angle += 2.0f;
+            door_angle += 1.0f;
     if (keyPressed['c'])
         if (door_angle >= 2.0f)
-            door_angle -= 2.0f;
+            door_angle -= 1.0f;
 }
 
 void update() {
@@ -563,7 +563,6 @@ void checkSpecMode() {
 void keyboardHandler(unsigned char key, int, int) {
     keyPressed[tolower(key)] = true;
 
-        printf("%d\n", key);
     if (key == 27)
         exit(0);
     else if (key == 13) {
@@ -583,7 +582,7 @@ void keyboardHandler(unsigned char key, int, int) {
             specMode = 1;
 
         checkSpecMode();
-    } else if (tolower(key) == 'c') {
+    } else if (tolower(key) == 'x') {
         showCeiling = !showCeiling;
     }
 }
@@ -685,11 +684,11 @@ void initializeBuilding() {
 
     // Second floor internal ceiling
     ceiling.addRectFace(new Point(0.0, 9.99, 0.0), new Point(0.0, 9.99, -10), new Point(5, 9.99, -10),
-                         new Point(5, 9.99, 0.0), COLOR_FLOOR);
+                        new Point(5, 9.99, 0.0), COLOR_FLOOR);
     ceiling.addRectFace(new Point(5, 9.99, -1.5), new Point(5, 9.99, -10), new Point(20, 9.99, -10),
-                         new Point(20, 9.99, -1.5), COLOR_FLOOR);
+                        new Point(20, 9.99, -1.5), COLOR_FLOOR);
     ceiling.addRectFace(new Point(20, 9.99, 0.0), new Point(20, 9.99, -10), new Point(25, 9.99, -10),
-                         new Point(25, 9.99, 0.0), COLOR_FLOOR);
+                        new Point(25, 9.99, 0.0), COLOR_FLOOR);
 
     // External stairs
     building.addRectFace(new Point(8, 2, 0), new Point(17, 2, 0), new Point(17, 2, 0.35),
@@ -1108,35 +1107,51 @@ void initializeBuilding() {
 
     ///-------------------------------------------------- Chair -----------------------------------------------------///
     // Back Left Leg
-    chair.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0),
-                      new Point(0.1, 0.15, 0), new Point(0.07, 0, 0.03), COLOR_TABLE);
+    chair.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0), new Point(0.1, 0.15, 0),
+                      new Point(0.07, 0, 0.03), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.1, 0.15, 0.1), new Point(0.07, 0, 0.07), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0, 0.15, 0.1), new Point(0.03, 0, 0.07), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0, 0.15, 0), new Point(0.03, 0, 0.03), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addCube(new Point(0, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE, 26);
 
     // Back Right Leg
-    chair.addRectFace(new Point(0.53, 0, 0.03), new Point(0.5, 0.15, 0),
-                      new Point(0.6, 0.15, 0), new Point(0.57, 0, 0.03), COLOR_TABLE);
+    chair.addRectFace(new Point(0.53, 0, 0.03), new Point(0.5, 0.15, 0), new Point(0.6, 0.15, 0),
+                      new Point(0.57, 0, 0.03), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.6, 0.15, 0.1), new Point(0.57, 0, 0.07), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.5, 0.15, 0.1), new Point(0.53, 0, 0.07), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.5, 0.15, 0), new Point(0.53, 0, 0.03), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addCube(new Point(0.5, 0.15, 0), 0.1, 0.65, 0.1, COLOR_TABLE, 26);
 
     // Front Left Leg
-    chair.addRectFace(new Point(0.03, 0, 0.83), new Point(0, 0.15, 0.8),
-                      new Point(0.1, 0.15, 0.8), new Point(0.07, 0, 0.83), COLOR_TABLE);
+    chair.addRectFace(new Point(0.03, 0, 0.83), new Point(0, 0.15, 0.8), new Point(0.1, 0.15, 0.8),
+                      new Point(0.07, 0, 0.83), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.1, 0.15, 0.9), new Point(0.07, 0, 0.87), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0, 0.15, 0.9), new Point(0.03, 0, 0.87), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0, 0.15, 0.8), new Point(0.03, 0, 0.83), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addCube(new Point(0, 0.15, 0.8), 0.1, 0.65, 0.1, COLOR_TABLE, 26);
 
     // Front Right Leg
-    chair.addRectFace(new Point(0.53, 0, 0.83), new Point(0.5, 0.15, 0.8),
-                      new Point(0.6, 0.15, 0.8), new Point(0.57, 0, 0.83), COLOR_TABLE);
+    chair.addRectFace(new Point(0.53, 0, 0.83), new Point(0.5, 0.15, 0.8), new Point(0.6, 0.15, 0.8),
+                      new Point(0.57, 0, 0.83), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.6, 0.15, 0.9), new Point(0.57, 0, 0.87), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.5, 0.15, 0.9), new Point(0.53, 0, 0.87), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addRectFace(new Point(0.5, 0.15, 0.8), new Point(0.53, 0, 0.83), COLOR_TABLE);
+    chair.getLastFace()->setTexture(26);
     chair.addCube(new Point(0.5, 0.15, 0.8), 0.1, 0.65, 0.1, COLOR_TABLE, 26);
 
     // Seat
@@ -1158,35 +1173,51 @@ void initializeBuilding() {
 
     ///-------------------------------------------- Fancy Chair -----------------------------------------------------///
     // Back Left Leg
-    fancyChair.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0),
-                           new Point(0.1, 0.15, 0), new Point(0.07, 0, 0.03), COLOR_TABLE);
+    fancyChair.addRectFace(new Point(0.03, 0, 0.03), new Point(0, 0.15, 0), new Point(0.1, 0.15, 0),
+                           new Point(0.07, 0, 0.03), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.1, 0.15, 0.1), new Point(0.07, 0, 0.07), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0, 0.15, 0.1), new Point(0.03, 0, 0.07), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0, 0.15, 0), new Point(0.03, 0, 0.03), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addCube(new Point(0, 0.15, 0), 0.1, 0.75, 0.1, COLOR_TABLE, 25);
 
     // Back Right Leg
-    fancyChair.addRectFace(new Point(0.53, 0, 0.03), new Point(0.5, 0.15, 0),
-                           new Point(0.6, 0.15, 0), new Point(0.57, 0, 0.03), COLOR_TABLE);
+    fancyChair.addRectFace(new Point(0.53, 0, 0.03), new Point(0.5, 0.15, 0), new Point(0.6, 0.15, 0),
+                           new Point(0.57, 0, 0.03), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.6, 0.15, 0.1), new Point(0.57, 0, 0.07), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.5, 0.15, 0.1), new Point(0.53, 0, 0.07), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.5, 0.15, 0), new Point(0.53, 0, 0.03), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addCube(new Point(0.5, 0.15, 0), 0.1, 0.65, 0.1, COLOR_TABLE, 25);
 
     // Front Left Leg
-    fancyChair.addRectFace(new Point(0.03, 0, 0.83), new Point(0, 0.15, 0.8),
-                           new Point(0.1, 0.15, 0.8), new Point(0.07, 0, 0.83), COLOR_TABLE);
+    fancyChair.addRectFace(new Point(0.03, 0, 0.83), new Point(0, 0.15, 0.8), new Point(0.1, 0.15, 0.8),
+                           new Point(0.07, 0, 0.83), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.1, 0.15, 0.9), new Point(0.07, 0, 0.87), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0, 0.15, 0.9), new Point(0.03, 0, 0.87), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0, 0.15, 0.8), new Point(0.03, 0, 0.83), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addCube(new Point(0, 0.15, 0.8), 0.1, 0.65, 0.1, COLOR_TABLE, 25);
 
     // Front Right Leg
-    fancyChair.addRectFace(new Point(0.53, 0, 0.83), new Point(0.5, 0.15, 0.8),
-                           new Point(0.6, 0.15, 0.8), new Point(0.57, 0, 0.83), COLOR_TABLE);
+    fancyChair.addRectFace(new Point(0.53, 0, 0.83), new Point(0.5, 0.15, 0.8), new Point(0.6, 0.15, 0.8),
+                           new Point(0.57, 0, 0.83), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.6, 0.15, 0.9), new Point(0.57, 0, 0.87), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.5, 0.15, 0.9), new Point(0.53, 0, 0.87), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addRectFace(new Point(0.5, 0.15, 0.8), new Point(0.53, 0, 0.83), COLOR_TABLE);
+    fancyChair.getLastFace()->setTexture(25);
     fancyChair.addCube(new Point(0.5, 0.15, 0.8), 0.1, 0.65, 0.1, COLOR_TABLE, 25);
 
     // Seat
