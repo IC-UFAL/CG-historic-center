@@ -11,8 +11,9 @@ public:
     int *rotationAxis;
     float width, height, depth, rotationAngle;
     Color *color;
+    int texture;
 
-    Cube(Point *pos, float width, float height, float depth, Point *rotPoint, float rotAngle, int rotAxis[3], Color *color);
+    Cube(Point *pos, float width, float height, float depth, Point *rotPoint, float rotAngle, int rotAxis[3], Color *color, int texture);
 };
 
 

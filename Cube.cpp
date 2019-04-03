@@ -1,7 +1,7 @@
 #include "Cube.h"
 
 Cube::Cube(Point *pos, float width, float height, float depth, Point *rotPoint, float rotAngle, int rotAxis[3],
-           Color *color) {
+           Color *color, int texture) {
     position = pos;
     this->width = width;
     this->height = height;
@@ -10,4 +10,5 @@ Cube::Cube(Point *pos, float width, float height, float depth, Point *rotPoint, 
     rotationAngle = rotAngle;
     rotationAxis = rotAxis;
     this->color = color;
+    this->texture = texture;
 }

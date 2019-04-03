@@ -47,17 +47,17 @@ void Model::addFace(Face *face) {
 }
 
 void Model::addCube(Point *pos, float width, float height, float depth, Point *rotPoint, float rotAngle, int *rotAxis,
-                    Color *color) {
-    cubes.push_back(new Cube(pos, width, height, depth, rotPoint, rotAngle, rotAxis, color));
+                    Color *color, int texture) {
+    cubes.push_back(new Cube(pos, width, height, depth, rotPoint, rotAngle, rotAxis, color, texture));
 }
 
-void Model::addCube(Point *pos, float width, float height, float depth, Color *color) {
+void Model::addCube(Point *pos, float width, float height, float depth, Color *color, int texture) {
     int axis[] = {0, 0, 0};
-    addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), 0, axis, color);
+    addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), 0, axis, color, texture);
 }
 
-void Model::addCube(Point *pos, float width, float height, float depth, float rotAngle, int *rotAxis, Color *color) {
-    addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), rotAngle, rotAxis, color);
+void Model::addCube(Point *pos, float width, float height, float depth, float rotAngle, int *rotAxis, Color *color, int texture) {
+    addCube(pos, width, height, depth, new Point(width / 2, height / 2, depth / 2), rotAngle, rotAxis, color, texture);
 }
 
 void Model::addCylinder(Point *pos, float base, float top, float height, float rotAngle, int rotAxis[3], Color *color) {

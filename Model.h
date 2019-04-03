@@ -42,11 +42,11 @@ public:
     void addFace(Face *face);
 
     void addCube(Point *pos, float width, float height, float depth, Point *rotPoint, float rotAngle, int rotAxis[3],
-                 Color *color);
+                 Color *color, int texture);
 
-    void addCube(Point *pos, float width, float height, float depth, float rotAngle, int rotAxis[3], Color *color);
+    void addCube(Point *pos, float width, float height, float depth, float rotAngle, int rotAxis[3], Color *color, int texture);
 
-    void addCube(Point *pos, float width, float height, float depth, Color *color);
+    void addCube(Point *pos, float width, float height, float depth, Color *color, int texture);
 
     void translate(float x, float y, float z);
 
