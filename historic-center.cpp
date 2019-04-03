@@ -39,7 +39,7 @@ void checkSpecMode();
 static unsigned int redisplay_interval = 1000 / 60;
 static int axisY[3] = {0, 1, 0}, axisZ[3] = {0, 0, 1}, axisX[3] = {1, 0, 0};
 
-Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.03, 0.005);
+Camera *cam = new Camera(*(new Point(12.5, 10, 25)), *(new Point(0, tan(-0.05), -1)), 0.07, 0.01);
 Model building, doors, fancyTable, bigTable, chair, fancyChair, fancyCouch, ceiling;
 Point *fancyChairSeats[2][4] = {
         {new Point(0, 0.92, 0.15), new Point(0, 0.92, 0.85), new Point(0.6, 0.92, 0.85), new Point(0.6, 0.92, 0.15)},
@@ -685,10 +685,13 @@ void initializeBuilding() {
     // Second floor internal ceiling
     ceiling.addRectFace(new Point(0.0, 9.99, 0.0), new Point(0.0, 9.99, -10), new Point(5, 9.99, -10),
                         new Point(5, 9.99, 0.0), COLOR_FLOOR);
+    ceiling.getLastFace()->setTexture(3);
     ceiling.addRectFace(new Point(5, 9.99, -1.5), new Point(5, 9.99, -10), new Point(20, 9.99, -10),
                         new Point(20, 9.99, -1.5), COLOR_FLOOR);
+    ceiling.getLastFace()->setTexture(3);
     ceiling.addRectFace(new Point(20, 9.99, 0.0), new Point(20, 9.99, -10), new Point(25, 9.99, -10),
                         new Point(25, 9.99, 0.0), COLOR_FLOOR);
+    ceiling.getLastFace()->setTexture(3);
 
     // External stairs
     building.addRectFace(new Point(8, 2, 0), new Point(17, 2, 0), new Point(17, 2, 0.35),
